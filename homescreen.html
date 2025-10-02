@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- iPhone Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bungus">
+    
+    <!-- Theme Color for iOS -->
+    <meta name="theme-color" content="#000000">
+    
+    <title>Home Screen</title>
+    
+    <link rel="stylesheet" href="base.css">
+    
+    <style>
+        body {
+            background: #000000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            padding: 0;
+        }
+        
+        #homescreen-image {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            display: block;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: none;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: calc(env(safe-area-inset-top) + 10px);
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 9999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            pointer-events: auto;
+        }
+        
+        .back-button:active {
+            background: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+    <img id="homescreen-image" alt="Home Screen">
+    
+    <script>
+        // Load the uploaded screenshot from localStorage
+        const storedImage = localStorage.getItem('homescreenImage');
+        const imageElement = document.getElementById('homescreen-image');
+        
+        if (storedImage) {
+            imageElement.src = storedImage;
+            
+            // Prevent any interactions with the image
+            imageElement.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            imageElement.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+        } else {
+            // No image stored, redirect back to main page immediately
+            window.location.replace('index.html');
+        }
+    </script>
+</body>
+</html>
