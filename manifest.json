@@ -1,7 +1,7 @@
 {
-  "name": "Bungus",
+  "name": "Bungus - Dummy Home Screen",
   "short_name": "Bungus",
-  "description": "Bungus iPhone Web App",
+  "description": "Create fake iPhone home screens from screenshots",
   "start_url": "/bungus/",
   "scope": "/bungus/",
   "display": "standalone",

@@ -15,121 +15,38 @@
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <title>Bungus - iPhone Web App</title>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="base.css">
     
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: none;
-            color: #ffffff;
-            min-height: 100dvh;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            overflow: hidden;
-        }
-        
-        .container {
-            text-align: center;
-            padding: 20px;
-            max-width: 90%;
-        }
-        
-        h1 {
-            font-size: 3em;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .subtitle {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        
-        .device-info {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        
-        .info-item {
-            margin: 15px 0;
-            font-size: 1.1em;
-        }
-        
-        .info-label {
-            font-weight: bold;
-            color: #ffd700;
-        }
-        
-        .button {
-            display: inline-block;
-            padding: 15px 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50px;
-            color: white;
-            text-decoration: none;
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-top: 30px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .button:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .footer {
-            position: fixed;
-            bottom: calc(env(safe-area-inset-bottom) + 20px);
-            font-size: 0.9em;
-            opacity: 0.7;
-        }
-        
-        /* Optimized for iPhone 15 Pro Max */
-        @media screen and (min-width: 430px) and (min-height: 932px) {
-            h1 {
-                font-size: 3.5em;
-            }
-            .subtitle {
-                font-size: 1.4em;
-            }
-        }
-    </style>
+    <title>Bungus - Dummy Home Screen</title>
 </head>
 <body>
     <div class="container">
         <h1>🎮 Bungus</h1>
-        <p class="subtitle">Welcome to your iPhone Web App!</p>
+        <p class="subtitle">Dummy Home Screen Creator</p>
+        
+        <div class="upload-section">
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📱</div>
+                <div class="upload-text">
+                    <strong>Upload iPhone Home Screen</strong>
+                    <p>Tap to select or drag & drop your screenshot</p>
+                </div>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+            
+            <div class="preview-container" id="preview-container" style="display: none;">
+                <img id="preview-image" alt="Home screen preview">
+                <div class="preview-actions">
+                    <button class="button secondary" id="change-image">Change Image</button>
+                    <button class="button primary" id="create-fake-screen">Create Fake Home Screen</button>
+                </div>
+            </div>
+        </div>
         
         <div class="device-info">
             <div class="info-item">
                 <span class="info-label">Device:</span> <span id="device">iPhone 15 Pro Max</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">iOS:</span> <span id="ios-version">iOS 18+</span>
             </div>
             <div class="info-item">
                 <span class="info-label">Screen:</span> <span id="screen-size">Loading...</span>
@@ -146,32 +63,13 @@
         Optimized for iPhone 15 Pro Max • iOS 18+
     </div>
     
-    <script>
-        // Display screen dimensions
-        document.getElementById('screen-size').textContent = 
-            window.innerWidth + ' × ' + window.innerHeight;
-        
-        // Check if running in standalone mode
-        if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
-            document.getElementById('standalone').textContent = 'Standalone App';
-            document.getElementById('install-btn').style.display = 'none';
-        }
-        
-        // Install button handler
-        document.getElementById('install-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('To add to Home Screen:\n\n1. Tap the Share button (⎋)\n2. Scroll and tap "Add to Home Screen"\n3. Tap "Add"');
-        });
-        
-        // Prevent zoom on double tap
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(event) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-    </script>
+    <!-- Fake Home Screen Overlay -->
+    <div class="fake-home-screen" id="fake-home-screen">
+        <button class="close-button" id="close-fake-screen">×</button>
+        <img id="fake-screen-image" alt="Fake home screen">
+    </div>
+    
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
