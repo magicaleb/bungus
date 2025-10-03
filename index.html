@@ -21,33 +21,35 @@
     <title>Bungus - Dummy Home Screen</title>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 Bungus</h1>
-        <p class="subtitle">Dummy Home Screen Creator</p>
-        
-        <div class="upload-section">
-            <div class="upload-area" id="upload-area">
-                <div class="upload-icon">📱</div>
-                <div class="upload-text">
-                    <strong>Upload iPhone Home Screen</strong>
-                    <p>Tap to select or drag & drop your screenshot</p>
+    <div id="bgimg"></div>
+    <div id="ui">
+        <div class="container">
+            <h1>🎮 Bungus</h1>
+            <p class="subtitle">Dummy Home Screen Creator</p>
+            
+            <div class="upload-section">
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📱</div>
+                    <div class="upload-text">
+                        <strong>Upload iPhone Home Screen</strong>
+                        <p>Tap to select or drag & drop your screenshot</p>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
                 </div>
-                <input type="file" id="file-input" accept="image/*" style="display: none;">
+                
+                <div class="preview-container" id="preview-container" style="display: none;">
+                    <img id="preview-image" alt="Home screen preview">
+                    <div class="preview-actions">
+                        <button class="button secondary" id="change-image">Change Image</button>
+                        <button class="button primary" id="create-fake-screen">Create Fake Home Screen</button>
+                    </div>
+                </div>
             </div>
             
-            <div class="preview-container" id="preview-container" style="display: none;">
-                <img id="preview-image" alt="Home screen preview">
-                <div class="preview-actions">
-                    <button class="button secondary" id="change-image">Change Image</button>
-                    <button class="button primary" id="create-fake-screen">Create Fake Home Screen</button>
+            <div class="device-info">
+                <div class="info-item">
+                    <span class="info-label">Device:</span> <span id="device">iPhone 15 Pro Max</span>
                 </div>
-            </div>
-        </div>
-        
-        <div class="device-info">
-            <div class="info-item">
-                <span class="info-label">Device:</span> <span id="device">iPhone 15 Pro Max</span>
-            </div>
             <div class="info-item">
                 <span class="info-label">Screen:</span> <span id="screen-size">Loading...</span>
             </div>
@@ -62,12 +64,25 @@
     <div class="footer">
         Optimized for iPhone 15 Pro Max • iOS 18+
     </div>
+    </div>
     
     <!-- Fake Home Screen Overlay -->
     <div class="fake-home-screen" id="fake-home-screen">
         <button class="close-button" id="close-fake-screen">×</button>
         <img id="fake-screen-image" alt="Fake home screen">
     </div>
+    
+    <!-- Safe Area Inset Detection -->
+    <script>
+    (function(){
+      const topInset = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--safe-top')
+      ) || 0;
+      if (topInset > 0) {
+        document.documentElement.classList.add('has-inset');
+      }
+    })();
+    </script>
     
     <!-- External JavaScript -->
     <script src="script.js"></script>
