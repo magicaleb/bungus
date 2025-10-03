@@ -11,7 +11,7 @@ const previewImage = document.getElementById('preview-image');
 const changeImageBtn = document.getElementById('change-image');
 const createFakeScreenBtn = document.getElementById('create-fake-screen');
 const fakeHomeScreen = document.getElementById('fake-home-screen');
-const fakeScreenImage = document.getElementById('fake-screen-image');
+const fakeScreenImage = document.getElementById('bgimg');
 const closeFakeScreenBtn = document.getElementById('close-fake-screen');
 
 // Initialize app
@@ -21,6 +21,19 @@ function initializeApp() {
     setupEventListeners();
     loadSavedImage();
     preventZoom();
+    detectSafeAreaInsets();
+}
+
+// Detect safe area insets and apply has-inset class
+function detectSafeAreaInsets() {
+    (function(){
+        const topInset = parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--safe-top')
+        ) || 0;
+        if (topInset > 0) {
+            document.documentElement.classList.add('has-inset');
+        }
+    })();
 }
 
 // Display screen dimensions
