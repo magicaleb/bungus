@@ -7,10 +7,10 @@
     <!-- iPhone Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bungus">
+    <meta name="apple-mobile-web-app-title" content="D&D Helper">
     
     <!-- Theme Color for iOS -->
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#8b4513">
     
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -18,71 +18,211 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="base.css">
     
-    <title>Bungus - Dummy Home Screen</title>
+    <title>D&D Helper - Crooked Moon Campaign</title>
 </head>
 <body>
     <div id="bgimg"></div>
-    <div id="ui">
-        <div class="container">
-            <h1>🎮 Bungus</h1>
-            <p class="subtitle">Dummy Home Screen Creator</p>
-            
-            <div class="upload-section">
-                <div class="upload-area" id="upload-area">
-                    <div class="upload-icon">📱</div>
-                    <div class="upload-text">
-                        <strong>Upload iPhone Home Screen</strong>
-                        <p>Tap to select or drag & drop your screenshot</p>
-                    </div>
-                    <input type="file" id="file-input" accept="image/*" style="display: none;">
-                </div>
-                
-                <div class="preview-container" id="preview-container" style="display: none;">
-                    <img id="preview-image" alt="Home screen preview">
-                    <div class="preview-actions">
-                        <button class="button secondary" id="change-image">Change Image</button>
-                        <button class="button primary" id="create-fake-screen">Create Fake Home Screen</button>
-                    </div>
-                </div>
+    
+    <!-- Main App Container -->
+    <div id="app">
+        
+        <!-- Dice Roller Page -->
+        <div id="dice-page" class="page active">
+            <div class="page-header">
+                <h1>🎲 Dice Roller</h1>
+                <button class="info-btn" data-info="dice">ℹ️</button>
             </div>
             
-            <div class="device-info">
-                <div class="info-item">
-                    <span class="info-label">Device:</span> <span id="device">iPhone 15 Pro Max</span>
-                </div>
-            <div class="info-item">
-                <span class="info-label">Screen:</span> <span id="screen-size">Loading...</span>
+            <div class="dice-grid">
+                <button class="dice-btn" data-dice="4">
+                    <span class="dice-label">d4</span>
+                    <span class="dice-icon">▲</span>
+                </button>
+                <button class="dice-btn" data-dice="6">
+                    <span class="dice-label">d6</span>
+                    <span class="dice-icon">⬢</span>
+                </button>
+                <button class="dice-btn" data-dice="8">
+                    <span class="dice-label">d8</span>
+                    <span class="dice-icon">◆</span>
+                </button>
+                <button class="dice-btn" data-dice="10">
+                    <span class="dice-label">d10</span>
+                    <span class="dice-icon">🔟</span>
+                </button>
+                <button class="dice-btn" data-dice="12">
+                    <span class="dice-label">d12</span>
+                    <span class="dice-icon">⬡</span>
+                </button>
+                <button class="dice-btn" data-dice="20">
+                    <span class="dice-label">d20</span>
+                    <span class="dice-icon">🎲</span>
+                </button>
+                <button class="dice-btn" data-dice="100">
+                    <span class="dice-label">d100</span>
+                    <span class="dice-icon">💯</span>
+                </button>
             </div>
-            <div class="info-item">
-                <span class="info-label">Mode:</span> <span id="standalone">Browser</span>
+            
+            <div class="roll-result" id="roll-result">
+                <div class="result-text">Roll a die to begin!</div>
+            </div>
+            
+            <div class="roll-history" id="roll-history">
+                <h3>Recent Rolls <button class="info-btn small" data-info="history">ℹ️</button></h3>
+                <div id="history-list"></div>
             </div>
         </div>
         
-        <a href="#" class="button" id="install-btn">Add to Home Screen</a>
+        <!-- Notes Page -->
+        <div id="notes-page" class="page">
+            <div class="page-header">
+                <h1>📝 Notes</h1>
+                <button class="info-btn" data-info="notes">ℹ️</button>
+            </div>
+            
+            <div class="notes-container">
+                <div class="note-input-section">
+                    <input type="text" id="note-title" placeholder="Title (optional)" class="note-title-input">
+                    <textarea id="note-content" placeholder="Write your notes here..." class="note-textarea"></textarea>
+                    <button id="add-note-btn" class="btn-primary">Add Note</button>
+                </div>
+                
+                <div class="notes-list" id="notes-list">
+                    <p class="empty-state">No notes yet. Start writing!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Character Sheet Page -->
+        <div id="character-page" class="page">
+            <div class="page-header">
+                <h1>⚔️ Character</h1>
+                <button class="info-btn" data-info="character">ℹ️</button>
+            </div>
+            
+            <div class="character-container">
+                <div class="placeholder-message">
+                    <div class="placeholder-icon">🧙‍♂️</div>
+                    <h2>Character Sheet Coming Soon!</h2>
+                    <p>Add your character details here after the framework is ready.</p>
+                    <p class="tip">💡 This is where your character's stats, abilities, and equipment will be displayed.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Guide Page -->
+        <div id="guide-page" class="page">
+            <div class="page-header">
+                <h1>📚 Guide</h1>
+                <button class="info-btn" data-info="guide">ℹ️</button>
+            </div>
+            
+            <div class="guide-container">
+                <div class="guide-section">
+                    <h2>🎲 What is D&D?</h2>
+                    <p>Dungeons & Dragons is a collaborative storytelling game where you and your friends create adventures together. One person is the Dungeon Master (DM) who guides the story, while others play characters in that story.</p>
+                </div>
+                
+                <div class="guide-section">
+                    <h2>🎯 Common Actions</h2>
+                    <div class="action-item">
+                        <strong>Ability Check:</strong> Roll d20 + your ability modifier to try something
+                    </div>
+                    <div class="action-item">
+                        <strong>Attack Roll:</strong> Roll d20 + attack bonus to hit enemies
+                    </div>
+                    <div class="action-item">
+                        <strong>Damage Roll:</strong> Roll weapon dice to determine damage dealt
+                    </div>
+                    <div class="action-item">
+                        <strong>Saving Throw:</strong> Roll d20 + saving throw modifier to resist effects
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h2>🎲 Dice Guide</h2>
+                    <div class="action-item">
+                        <strong>d4:</strong> Small weapons, minor spells
+                    </div>
+                    <div class="action-item">
+                        <strong>d6:</strong> Common weapons, basic spells
+                    </div>
+                    <div class="action-item">
+                        <strong>d8:</strong> Medium weapons, healing spells
+                    </div>
+                    <div class="action-item">
+                        <strong>d10:</strong> Heavy weapons, powerful effects
+                    </div>
+                    <div class="action-item">
+                        <strong>d12:</strong> Very heavy weapons
+                    </div>
+                    <div class="action-item">
+                        <strong>d20:</strong> The most important! Used for all checks, attacks, and saves
+                    </div>
+                    <div class="action-item">
+                        <strong>d100:</strong> Percentile rolls for special situations
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h2>📖 Key Terms</h2>
+                    <div class="action-item">
+                        <strong>DM (Dungeon Master):</strong> The storyteller and referee
+                    </div>
+                    <div class="action-item">
+                        <strong>Initiative:</strong> Roll d20 to determine turn order in combat
+                    </div>
+                    <div class="action-item">
+                        <strong>AC (Armor Class):</strong> How hard you are to hit (higher is better)
+                    </div>
+                    <div class="action-item">
+                        <strong>HP (Hit Points):</strong> Your health (when it reaches 0, you fall unconscious)
+                    </div>
+                    <div class="action-item">
+                        <strong>Advantage:</strong> Roll two d20s and use the higher result
+                    </div>
+                    <div class="action-item">
+                        <strong>Disadvantage:</strong> Roll two d20s and use the lower result
+                    </div>
+                </div>
+                
+                <div class="guide-section">
+                    <h2>🌙 Crooked Moon Campaign</h2>
+                    <p>You're on an adventure in the Crooked Moon campaign! Pay attention to your DM's descriptions, ask questions when confused, and remember: there's no wrong way to play as long as everyone is having fun!</p>
+                </div>
+            </div>
+        </div>
+        
     </div>
     
-    <div class="footer">
-        Optimized for iPhone 15 Pro Max • iOS 18+
-    </div>
-    </div>
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-page="dice-page">
+            <span class="nav-icon">🎲</span>
+            <span class="nav-label">Dice</span>
+        </button>
+        <button class="nav-btn" data-page="notes-page">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">Notes</span>
+        </button>
+        <button class="nav-btn" data-page="character-page">
+            <span class="nav-icon">⚔️</span>
+            <span class="nav-label">Character</span>
+        </button>
+        <button class="nav-btn" data-page="guide-page">
+            <span class="nav-icon">📚</span>
+            <span class="nav-label">Guide</span>
+        </button>
+    </nav>
     
-    <!-- Fake Home Screen Overlay -->
-    <div class="fake-home-screen" id="fake-home-screen">
-        <button class="close-button" id="close-fake-screen">×</button>
-        <img id="fake-screen-image" alt="Fake home screen">
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">×</button>
+            <div id="modal-body"></div>
+        </div>
     </div>
-    
-    <!-- Safe Area Inset Detection -->
-    <script>
-    (function(){
-      const topInset = parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue('--safe-top')
-      ) || 0;
-      if (topInset > 0) {
-        document.documentElement.classList.add('has-inset');
-      }
-    })();
-    </script>
     
     <!-- External JavaScript -->
     <script src="script.js"></script>
