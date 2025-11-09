@@ -1,12 +1,12 @@
 {
-  "name": "Bungus - Dummy Home Screen",
-  "short_name": "Bungus",
-  "description": "Create fake iPhone home screens from screenshots",
+  "name": "D&D Helper - Crooked Moon Campaign",
+  "short_name": "D&D Helper",
+  "description": "A beginner-friendly Dungeons & Dragons companion for the Crooked Moon campaign",
   "start_url": "/bungus/",
   "scope": "/bungus/",
   "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#000000",
+  "background_color": "#2c1810",
+  "theme_color": "#8b4513",
   "orientation": "portrait",
   "icons": [
     {
