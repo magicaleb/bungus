@@ -65,6 +65,8 @@ function checkStandaloneMode() {
     const statusMode = document.getElementById('status-mode');
     const installPrompt = document.getElementById('install-prompt');
     
+    if (!statusMode || !installPrompt) return;
+    
     if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
         statusMode.textContent = '📱 Standalone Mode';
         installPrompt.style.display = 'none';
@@ -77,20 +79,38 @@ function checkStandaloneMode() {
 function renderTools() {
     const toolsGrid = document.querySelector('.tools-grid');
     
+    if (!toolsGrid) return;
+    
     tools.forEach(tool => {
         const toolCard = document.createElement('div');
         toolCard.className = 'tool-card';
         toolCard.setAttribute('data-tool-id', tool.id);
         
-        toolCard.innerHTML = `
-            <div class="tool-icon" style="background: ${tool.color}">
-                ${tool.icon}
-            </div>
-            <div class="tool-info">
-                <h3 class="tool-name">${tool.name}</h3>
-                <p class="tool-description">${tool.description}</p>
-            </div>
-        `;
+        // Create icon element
+        const toolIcon = document.createElement('div');
+        toolIcon.className = 'tool-icon';
+        toolIcon.style.background = tool.color;
+        toolIcon.textContent = tool.icon;
+        
+        // Create info container
+        const toolInfo = document.createElement('div');
+        toolInfo.className = 'tool-info';
+        
+        // Create name element
+        const toolName = document.createElement('h3');
+        toolName.className = 'tool-name';
+        toolName.textContent = tool.name;
+        
+        // Create description element
+        const toolDescription = document.createElement('p');
+        toolDescription.className = 'tool-description';
+        toolDescription.textContent = tool.description;
+        
+        // Assemble the card
+        toolInfo.appendChild(toolName);
+        toolInfo.appendChild(toolDescription);
+        toolCard.appendChild(toolIcon);
+        toolCard.appendChild(toolInfo);
         
         toolCard.addEventListener('click', () => handleToolClick(tool));
         toolsGrid.appendChild(toolCard);
