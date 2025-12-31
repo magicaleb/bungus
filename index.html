@@ -7,10 +7,10 @@
     <!-- iPhone Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bungus">
+    <meta name="apple-mobile-web-app-title" content="My Tools">
     
     <!-- Theme Color for iOS -->
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#667eea">
     
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -18,58 +18,32 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="base.css">
     
-    <title>Bungus - Dummy Home Screen</title>
+    <title>My Tools Hub</title>
 </head>
 <body>
     <div id="bgimg"></div>
     <div id="ui">
-        <div class="container">
-            <h1>🎮 Bungus</h1>
-            <p class="subtitle">Dummy Home Screen Creator</p>
-            
-            <div class="upload-section">
-                <div class="upload-area" id="upload-area">
-                    <div class="upload-icon">📱</div>
-                    <div class="upload-text">
-                        <strong>Upload iPhone Home Screen</strong>
-                        <p>Tap to select or drag & drop your screenshot</p>
-                    </div>
-                    <input type="file" id="file-input" accept="image/*" style="display: none;">
-                </div>
-                
-                <div class="preview-container" id="preview-container" style="display: none;">
-                    <img id="preview-image" alt="Home screen preview">
-                    <div class="preview-actions">
-                        <button class="button secondary" id="change-image">Change Image</button>
-                        <button class="button primary" id="create-fake-screen">Create Fake Home Screen</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="device-info">
-                <div class="info-item">
-                    <span class="info-label">Device:</span> <span id="device">iPhone 15 Pro Max</span>
-                </div>
-            <div class="info-item">
-                <span class="info-label">Screen:</span> <span id="screen-size">Loading...</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Mode:</span> <span id="standalone">Browser</span>
-            </div>
+        <header class="app-header">
+            <h1>🚀 My Tools</h1>
+            <p class="tagline">Personal Productivity Hub</p>
+        </header>
+        
+        <main class="tools-grid">
+            <!-- Tools will be dynamically added here -->
+        </main>
+        
+        <div class="install-prompt" id="install-prompt">
+            <button class="install-button" id="install-btn">
+                <span class="install-icon">📱</span>
+                <span class="install-text">Install App</span>
+            </button>
         </div>
         
-        <a href="#" class="button" id="install-btn">Add to Home Screen</a>
-    </div>
-    
-    <div class="footer">
-        Optimized for iPhone 15 Pro Max • iOS 18+
-    </div>
-    </div>
-    
-    <!-- Fake Home Screen Overlay -->
-    <div class="fake-home-screen" id="fake-home-screen">
-        <button class="close-button" id="close-fake-screen">×</button>
-        <img id="fake-screen-image" alt="Fake home screen">
+        <footer class="app-footer">
+            <div class="status-info">
+                <span id="status-mode">Browser Mode</span>
+            </div>
+        </footer>
     </div>
     
     <!-- Safe Area Inset Detection -->
