@@ -4,17 +4,9 @@
 (function() {
   'use strict';
 
-  // Detect safe area insets
-  function detectSafeAreaInsets() {
-    const topInset = parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--safe-top')
-    ) || 0;
-    if (topInset > 0) {
-      document.documentElement.classList.add('has-inset');
-    }
-  }
-
   // Fix viewport height on mobile browsers
+  // Sets --vh CSS variable that can be used for accurate viewport height calculations
+  // Usage in CSS: height: calc(var(--vh, 1vh) * 100)
   function setViewportHeight() {
     // Get actual viewport height and set as CSS variable
     const vh = window.innerHeight * 0.01;
@@ -60,7 +52,6 @@
 
   // Initialize all PWA utilities
   function initPWAUtils() {
-    detectSafeAreaInsets();
     initViewportHeightFix();
     initElasticScrollPrevention();
   }
@@ -75,7 +66,6 @@
   // Export for manual initialization if needed
   window.PWAUtils = {
     init: initPWAUtils,
-    detectSafeAreaInsets: detectSafeAreaInsets,
     initViewportHeightFix: initViewportHeightFix,
     initElasticScrollPrevention: initElasticScrollPrevention
   };
