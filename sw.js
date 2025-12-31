@@ -1,16 +1,16 @@
 // Service Worker for My Tools Hub PWA
 const CACHE_NAME = 'my-tools-hub-v1';
 const urlsToCache = [
-  '/bungus/',
-  '/bungus/index.html',
-  '/bungus/habits.html',
-  '/bungus/script.js',
-  '/bungus/habits.js',
-  '/bungus/base.css',
-  '/bungus/habits.css',
-  '/bungus/manifest.json',
-  '/bungus/icon-192.png',
-  '/bungus/icon-512.png'
+  './',
+  './index.html',
+  './habits.html',
+  './script.js',
+  './habits.js',
+  './base.css',
+  './habits.css',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 // Install event - cache all resources

@@ -72,7 +72,7 @@ function initializeApp() {
 // Register service worker for PWA
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/bungus/sw.js')
+        navigator.serviceWorker.register('sw.js')
             .then(registration => {
                 console.log('Service Worker registered:', registration);
             })
