@@ -1,12 +1,12 @@
 {
-  "name": "Bungus - Dummy Home Screen",
-  "short_name": "Bungus",
-  "description": "Create fake iPhone home screens from screenshots",
+  "name": "My Tools Hub",
+  "short_name": "My Tools",
+  "description": "Personal productivity tools and utilities hub",
   "start_url": "/bungus/",
   "scope": "/bungus/",
   "display": "standalone",
   "background_color": "#667eea",
-  "theme_color": "#000000",
+  "theme_color": "#667eea",
   "orientation": "portrait",
   "icons": [
     {

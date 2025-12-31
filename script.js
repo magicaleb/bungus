@@ -1,158 +1,156 @@
-// Bungus - Dummy Home Screen JavaScript
+// My Tools Hub - JavaScript
 
-// Global variables
-let currentImageData = null;
-
-// DOM elements
-const uploadArea = document.getElementById('upload-area');
-const fileInput = document.getElementById('file-input');
-const previewContainer = document.getElementById('preview-container');
-const previewImage = document.getElementById('preview-image');
-const changeImageBtn = document.getElementById('change-image');
-const createFakeScreenBtn = document.getElementById('create-fake-screen');
-const fakeHomeScreen = document.getElementById('fake-home-screen');
-const fakeScreenImage = document.getElementById('fake-screen-image');
-const closeFakeScreenBtn = document.getElementById('close-fake-screen');
+// Tool definitions
+const tools = [
+    {
+        id: 'notes',
+        name: 'Notes',
+        icon: '📝',
+        description: 'Quick note taking',
+        color: '#FFD700',
+        link: '#'
+    },
+    {
+        id: 'calculator',
+        name: 'Calculator',
+        icon: '🧮',
+        description: 'Basic calculator',
+        color: '#4CAF50',
+        link: '#'
+    },
+    {
+        id: 'timer',
+        name: 'Timer',
+        icon: '⏱️',
+        description: 'Stopwatch & countdown',
+        color: '#FF6B6B',
+        link: '#'
+    },
+    {
+        id: 'tasks',
+        name: 'Tasks',
+        icon: '✅',
+        description: 'To-do list',
+        color: '#4ECDC4',
+        link: '#'
+    },
+    {
+        id: 'weather',
+        name: 'Weather',
+        icon: '🌤️',
+        description: 'Weather info',
+        color: '#95E1D3',
+        link: '#'
+    },
+    {
+        id: 'tools',
+        name: 'More Tools',
+        icon: '🛠️',
+        description: 'Additional utilities',
+        color: '#9B59B6',
+        link: '#'
+    }
+];
 
 // Initialize app
 function initializeApp() {
-    displayScreenInfo();
     checkStandaloneMode();
+    renderTools();
     setupEventListeners();
-    loadSavedImage();
     preventZoom();
-}
-
-// Display screen dimensions
-function displayScreenInfo() {
-    document.getElementById('screen-size').textContent = 
-        window.innerWidth + ' × ' + window.innerHeight;
 }
 
 // Check if running in standalone mode
 function checkStandaloneMode() {
+    const statusMode = document.getElementById('status-mode');
+    const installPrompt = document.getElementById('install-prompt');
+    
     if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
-        document.getElementById('standalone').textContent = 'Standalone App';
-        document.getElementById('install-btn').style.display = 'none';
+        statusMode.textContent = '📱 Standalone Mode';
+        installPrompt.style.display = 'none';
+    } else {
+        statusMode.textContent = '🌐 Browser Mode';
     }
 }
 
-// Setup all event listeners
-function setupEventListeners() {
-    // Install button
-    document.getElementById('install-btn').addEventListener('click', showInstallInstructions);
+// Render tool cards
+function renderTools() {
+    const toolsGrid = document.querySelector('.tools-grid');
     
-    // Upload functionality
-    uploadArea.addEventListener('click', () => fileInput.click());
-    uploadArea.addEventListener('dragover', handleDragOver);
-    uploadArea.addEventListener('dragleave', handleDragLeave);
-    uploadArea.addEventListener('drop', handleDrop);
-    fileInput.addEventListener('change', handleFileSelect);
-    
-    // Preview actions
-    changeImageBtn.addEventListener('click', changeImage);
-    createFakeScreenBtn.addEventListener('click', showFakeScreen);
-    
-    // Fake screen controls
-    closeFakeScreenBtn.addEventListener('click', closeFakeScreen);
-    
-    // Prevent interactions on fake screen
-    fakeScreenImage.addEventListener('contextmenu', preventDefault);
-    fakeHomeScreen.addEventListener('selectstart', preventDefault);
+    tools.forEach(tool => {
+        const toolCard = document.createElement('div');
+        toolCard.className = 'tool-card';
+        toolCard.setAttribute('data-tool-id', tool.id);
+        
+        toolCard.innerHTML = `
+            <div class="tool-icon" style="background: ${tool.color}">
+                ${tool.icon}
+            </div>
+            <div class="tool-info">
+                <h3 class="tool-name">${tool.name}</h3>
+                <p class="tool-description">${tool.description}</p>
+            </div>
+        `;
+        
+        toolCard.addEventListener('click', () => handleToolClick(tool));
+        toolsGrid.appendChild(toolCard);
+    });
 }
 
-// Load saved image on app start
-function loadSavedImage() {
-    const savedImage = localStorage.getItem('homeScreenImage');
-    if (savedImage) {
-        displayPreview(savedImage);
+// Handle tool click
+function handleToolClick(tool) {
+    // Show coming soon message for now
+    showToast(`${tool.name} - Coming Soon!`);
+    
+    // In the future, navigate to the tool
+    // if (tool.link !== '#') {
+    //     window.location.href = tool.link;
+    // }
+}
+
+// Show toast notification
+function showToast(message) {
+    // Remove existing toast if any
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Show toast
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Hide and remove toast after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    const installBtn = document.getElementById('install-btn');
+    
+    if (installBtn) {
+        installBtn.addEventListener('click', showInstallInstructions);
     }
 }
 
 // Show installation instructions
 function showInstallInstructions(e) {
     e.preventDefault();
-    alert('To add to Home Screen:\n\n1. Tap the Share button (⎋)\n2. Scroll and tap "Add to Home Screen"\n3. Tap "Add"');
-}
-
-// Handle drag over
-function handleDragOver(e) {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
-}
-
-// Handle drag leave
-function handleDragLeave(e) {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-}
-
-// Handle file drop
-function handleDrop(e) {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    const files = e.dataTransfer.files;
-    if (files.length > 0 && files[0].type.startsWith('image/')) {
-        handleImageFile(files[0]);
+    
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    if (isIOS) {
+        showToast('Tap Share (↑) then "Add to Home Screen"');
+    } else {
+        showToast('Use your browser\'s menu to install this app');
     }
-}
-
-// Handle file selection
-function handleFileSelect(e) {
-    if (e.target.files.length > 0) {
-        handleImageFile(e.target.files[0]);
-    }
-}
-
-// Process uploaded image file
-function handleImageFile(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const imageData = e.target.result;
-        displayPreview(imageData);
-        saveImageToStorage(imageData);
-    };
-    reader.readAsDataURL(file);
-}
-
-// Display image preview
-function displayPreview(imageData) {
-    currentImageData = imageData;
-    previewImage.src = imageData;
-    uploadArea.style.display = 'none';
-    previewContainer.style.display = 'block';
-}
-
-// Save image to local storage
-function saveImageToStorage(imageData) {
-    localStorage.setItem('homeScreenImage', imageData);
-}
-
-// Change image functionality
-function changeImage() {
-    uploadArea.style.display = 'block';
-    previewContainer.style.display = 'none';
-    fileInput.click();
-}
-
-// Show fake home screen
-function showFakeScreen() {
-    if (currentImageData) {
-        fakeScreenImage.src = currentImageData;
-        fakeHomeScreen.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-// Close fake home screen
-function closeFakeScreen() {
-    fakeHomeScreen.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Prevent default event
-function preventDefault(e) {
-    e.preventDefault();
 }
 
 // Prevent zoom on double tap
@@ -168,9 +166,6 @@ function preventZoom() {
 }
 
 // Initialize app when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-// Also initialize if DOM is already loaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
