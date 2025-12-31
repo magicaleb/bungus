@@ -3,6 +3,14 @@
 // Tool definitions
 const tools = [
     {
+        id: 'habits',
+        name: 'Habit Tracker',
+        icon: '📅',
+        description: 'Daily habit tracking',
+        color: '#667eea',
+        link: 'habits.html'
+    },
+    {
         id: 'notes',
         name: 'Notes',
         icon: '📝',
@@ -119,13 +127,14 @@ function renderTools() {
 
 // Handle tool click
 function handleToolClick(tool) {
-    // Show coming soon message for now
-    showToast(`${tool.name} - Coming Soon!`);
+    // Navigate to tool page if link is provided
+    if (tool.link && tool.link !== '#') {
+        window.location.href = tool.link;
+        return;
+    }
     
-    // In the future, navigate to the tool
-    // if (tool.link !== '#') {
-    //     window.location.href = tool.link;
-    // }
+    // Show coming soon message for tools without pages
+    showToast(`${tool.name} - Coming Soon!`);
 }
 
 // Show toast notification
