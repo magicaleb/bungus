@@ -11,12 +11,16 @@ const DEFAULT_HABITS = [
 let habits = [];
 let completions = {}; // { 'YYYY-MM-DD': [habitIndex1, habitIndex2, ...] }
 let currentMonth = new Date();
+let currentWeekStart = null;
+let currentDay = new Date();
+let currentView = 'month'; // 'month', 'week', or 'day'
 
 // Initialize app
 function initializeApp() {
     loadData();
     renderTodayDate();
     renderHabits();
+    initializeWeekStart();
     renderCalendar();
     updateProgress();
     setupEventListeners();
@@ -46,6 +50,25 @@ function getTodayString() {
 // Get date string from Date object
 function getDateString(date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// Initialize week start to current week
+function initializeWeekStart() {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    currentWeekStart = new Date(today);
+    currentWeekStart.setDate(today.getDate() - dayOfWeek);
+    currentWeekStart.setHours(0, 0, 0, 0);
+}
+
+// Get start of week for a given date
+function getWeekStart(date) {
+    const d = new Date(date);
+    const dayOfWeek = d.getDay();
+    const weekStart = new Date(d);
+    weekStart.setDate(d.getDate() - dayOfWeek);
+    weekStart.setHours(0, 0, 0, 0);
+    return weekStart;
 }
 
 // Render today's date
@@ -167,17 +190,29 @@ function updateProgress() {
 
 // Render calendar
 function renderCalendar() {
+    if (currentView === 'month') {
+        renderMonthView();
+    } else if (currentView === 'week') {
+        renderWeekView();
+    } else if (currentView === 'day') {
+        renderDayView();
+    }
+}
+
+// Render month view
+function renderMonthView() {
     const calendarGrid = document.getElementById('calendar-grid');
-    const calendarMonthElement = document.getElementById('calendar-month');
+    const calendarTitle = document.getElementById('calendar-title');
     
-    if (!calendarGrid || !calendarMonthElement) return;
+    if (!calendarGrid || !calendarTitle) return;
     
-    // Update month header
+    // Update header
     const monthOptions = { month: 'long', year: 'numeric' };
-    calendarMonthElement.textContent = currentMonth.toLocaleDateString('en-US', monthOptions);
+    calendarTitle.textContent = currentMonth.toLocaleDateString('en-US', monthOptions);
     
     // Clear calendar
     calendarGrid.innerHTML = '';
+    calendarGrid.className = 'calendar-grid';
     
     // Add day headers
     const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -223,6 +258,205 @@ function renderCalendar() {
         const date = new Date(year, month + 1, day);
         const dayElement = createCalendarDay(date, true);
         calendarGrid.appendChild(dayElement);
+    }
+}
+
+// Render week view
+function renderWeekView() {
+    const calendarGrid = document.getElementById('calendar-grid');
+    const calendarTitle = document.getElementById('calendar-title');
+    
+    if (!calendarGrid || !calendarTitle) return;
+    
+    // Clear calendar
+    calendarGrid.innerHTML = '';
+    calendarGrid.className = 'week-view';
+    
+    // Calculate week range
+    const weekEnd = new Date(currentWeekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    
+    // Update header
+    const startMonth = currentWeekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const endMonth = weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    calendarTitle.textContent = `${startMonth} - ${endMonth}`;
+    
+    const todayString = getTodayString();
+    
+    // Render 7 days
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(currentWeekStart);
+        date.setDate(date.getDate() + i);
+        const dateString = getDateString(date);
+        const isToday = dateString === todayString;
+        
+        const dayCompletions = completions[dateString] || [];
+        const completed = dayCompletions.length;
+        const total = habits.length;
+        
+        const weekDayCard = document.createElement('div');
+        weekDayCard.className = 'week-day-card';
+        
+        if (isToday) {
+            weekDayCard.classList.add('today');
+        }
+        
+        // Add completion class
+        if (completed > 0 && total > 0) {
+            if (completed === total) {
+                weekDayCard.classList.add('completed-all');
+            } else {
+                weekDayCard.classList.add('completed-some');
+            }
+        } else if (total > 0) {
+            const dateMidnight = new Date(date);
+            dateMidnight.setHours(0, 0, 0, 0);
+            const todayMidnight = new Date();
+            todayMidnight.setHours(0, 0, 0, 0);
+            if (dateMidnight < todayMidnight && !isToday) {
+                weekDayCard.classList.add('completed-none');
+            }
+        }
+        
+        const dayInfo = document.createElement('div');
+        dayInfo.className = 'week-day-info';
+        
+        const dayName = document.createElement('div');
+        dayName.className = 'week-day-name';
+        dayName.textContent = date.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        const dayDate = document.createElement('div');
+        dayDate.className = 'week-day-date';
+        dayDate.textContent = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        dayInfo.appendChild(dayName);
+        dayInfo.appendChild(dayDate);
+        
+        const dayStats = document.createElement('div');
+        dayStats.className = 'week-day-stats';
+        
+        if (total > 0) {
+            const badge = document.createElement('div');
+            badge.className = 'week-completion-badge';
+            badge.textContent = `${completed}/${total}`;
+            
+            const progressBar = document.createElement('div');
+            progressBar.className = 'week-progress-bar';
+            
+            const progressFill = document.createElement('div');
+            progressFill.className = 'week-progress-fill';
+            progressFill.style.width = `${(completed / total) * 100}%`;
+            
+            progressBar.appendChild(progressFill);
+            dayStats.appendChild(badge);
+            dayStats.appendChild(progressBar);
+        }
+        
+        weekDayCard.appendChild(dayInfo);
+        weekDayCard.appendChild(dayStats);
+        calendarGrid.appendChild(weekDayCard);
+    }
+}
+
+// Render day view
+function renderDayView() {
+    const calendarGrid = document.getElementById('calendar-grid');
+    const calendarTitle = document.getElementById('calendar-title');
+    
+    if (!calendarGrid || !calendarTitle) return;
+    
+    // Clear calendar
+    calendarGrid.innerHTML = '';
+    calendarGrid.className = 'day-view';
+    
+    // Update header
+    calendarTitle.textContent = currentDay.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    
+    const dateString = getDateString(currentDay);
+    const dayCompletions = completions[dateString] || [];
+    const completed = dayCompletions.length;
+    const total = habits.length;
+    
+    // Day header
+    const header = document.createElement('div');
+    header.className = 'day-view-header';
+    
+    const viewDate = document.createElement('div');
+    viewDate.className = 'day-view-date';
+    viewDate.textContent = currentDay.getDate();
+    
+    const viewWeekday = document.createElement('div');
+    viewWeekday.className = 'day-view-weekday';
+    viewWeekday.textContent = currentDay.toLocaleDateString('en-US', { weekday: 'long' });
+    
+    header.appendChild(viewDate);
+    header.appendChild(viewWeekday);
+    
+    // Summary cards
+    if (total > 0) {
+        const summary = document.createElement('div');
+        summary.className = 'day-view-summary';
+        
+        const completedCard = document.createElement('div');
+        completedCard.className = 'day-summary-card';
+        completedCard.innerHTML = `
+            <div class="summary-value">${completed}</div>
+            <div class="summary-label">Completed</div>
+        `;
+        
+        const totalCard = document.createElement('div');
+        totalCard.className = 'day-summary-card';
+        totalCard.innerHTML = `
+            <div class="summary-value">${total}</div>
+            <div class="summary-label">Total Habits</div>
+        `;
+        
+        const percentCard = document.createElement('div');
+        percentCard.className = 'day-summary-card';
+        const percentage = Math.round((completed / total) * 100);
+        percentCard.innerHTML = `
+            <div class="summary-value">${percentage}%</div>
+            <div class="summary-label">Complete</div>
+        `;
+        
+        summary.appendChild(completedCard);
+        summary.appendChild(totalCard);
+        summary.appendChild(percentCard);
+        header.appendChild(summary);
+    }
+    
+    calendarGrid.appendChild(header);
+    
+    // Habits list
+    if (habits.length > 0) {
+        const habitsList = document.createElement('div');
+        habitsList.className = 'day-habits-list';
+        
+        habits.forEach((habit, index) => {
+            const isCompleted = dayCompletions.includes(index);
+            
+            const habitItem = document.createElement('div');
+            habitItem.className = `day-habit-item ${isCompleted ? 'completed' : ''}`;
+            
+            const habitStatus = document.createElement('div');
+            habitStatus.className = 'day-habit-status';
+            habitStatus.textContent = isCompleted ? '✓' : '';
+            
+            const habitName = document.createElement('div');
+            habitName.className = 'day-habit-name';
+            habitName.textContent = habit;
+            
+            habitItem.appendChild(habitStatus);
+            habitItem.appendChild(habitName);
+            habitsList.appendChild(habitItem);
+        });
+        
+        calendarGrid.appendChild(habitsList);
+    } else {
+        const noData = document.createElement('div');
+        noData.className = 'no-data-message';
+        noData.textContent = 'No habits configured';
+        calendarGrid.appendChild(noData);
     }
 }
 
@@ -279,15 +513,44 @@ function createCalendarDay(date, isOtherMonth, isToday = false) {
     return dayElement;
 }
 
-// Navigate to previous month
-function prevMonth() {
-    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+// Navigate to previous period
+function prevPeriod() {
+    if (currentView === 'month') {
+        currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    } else if (currentView === 'week') {
+        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+    } else if (currentView === 'day') {
+        currentDay.setDate(currentDay.getDate() - 1);
+    }
     renderCalendar();
 }
 
-// Navigate to next month
-function nextMonth() {
-    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+// Navigate to next period
+function nextPeriod() {
+    if (currentView === 'month') {
+        currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+    } else if (currentView === 'week') {
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+    } else if (currentView === 'day') {
+        currentDay.setDate(currentDay.getDate() + 1);
+    }
+    renderCalendar();
+}
+
+// Switch view
+function switchView(view) {
+    currentView = view;
+    
+    // Update active button
+    const viewButtons = document.querySelectorAll('.view-button');
+    viewButtons.forEach(btn => {
+        if (btn.dataset.view === view) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
     renderCalendar();
 }
 
@@ -297,9 +560,10 @@ function setupEventListeners() {
     const closeSettingsBtn = document.getElementById('close-settings');
     const saveSettingsBtn = document.getElementById('save-settings');
     const addHabitBtn = document.getElementById('add-habit-btn');
-    const prevMonthBtn = document.getElementById('prev-month');
-    const nextMonthBtn = document.getElementById('next-month');
+    const prevPeriodBtn = document.getElementById('prev-period');
+    const nextPeriodBtn = document.getElementById('next-period');
     const modal = document.getElementById('settings-modal');
+    const viewButtons = document.querySelectorAll('.view-button');
     
     if (settingsBtn) {
         settingsBtn.addEventListener('click', openSettings);
@@ -317,13 +581,20 @@ function setupEventListeners() {
         addHabitBtn.addEventListener('click', addHabitInput);
     }
     
-    if (prevMonthBtn) {
-        prevMonthBtn.addEventListener('click', prevMonth);
+    if (prevPeriodBtn) {
+        prevPeriodBtn.addEventListener('click', prevPeriod);
     }
     
-    if (nextMonthBtn) {
-        nextMonthBtn.addEventListener('click', nextMonth);
+    if (nextPeriodBtn) {
+        nextPeriodBtn.addEventListener('click', nextPeriod);
     }
+    
+    // View switcher buttons
+    viewButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchView(btn.dataset.view);
+        });
+    });
     
     // Close modal on background click
     if (modal) {

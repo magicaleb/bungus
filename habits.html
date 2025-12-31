@@ -52,13 +52,21 @@
             <!-- Calendar Section -->
             <section class="calendar-section">
                 <div class="calendar-header">
-                    <button class="nav-button" id="prev-month">←</button>
-                    <h2 id="calendar-month">Month Year</h2>
-                    <button class="nav-button" id="next-month">→</button>
+                    <button class="nav-button" id="prev-period">←</button>
+                    <h2 id="calendar-title">Month Year</h2>
+                    <button class="nav-button" id="next-period">→</button>
                 </div>
                 
-                <div class="calendar-grid" id="calendar-grid">
-                    <!-- Calendar will be dynamically generated -->
+                <div class="view-switcher">
+                    <button class="view-button active" data-view="month">Month</button>
+                    <button class="view-button" data-view="week">Week</button>
+                    <button class="view-button" data-view="day">Day</button>
+                </div>
+                
+                <div class="calendar-container">
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar will be dynamically generated -->
+                    </div>
                 </div>
             </section>
         </main>
