@@ -24,6 +24,20 @@ function initializeApp() {
     renderCalendar();
     updateProgress();
     setupEventListeners();
+    registerServiceWorker();
+}
+
+// Register service worker for PWA
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/bungus/sw.js')
+            .then(registration => {
+                console.log('Service Worker registered:', registration);
+            })
+            .catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+    }
 }
 
 // Load data from localStorage

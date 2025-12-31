@@ -254,6 +254,8 @@
 
 .calendar-container {
     width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .nav-button {
@@ -748,6 +750,42 @@
 }
 
 /* Responsive Design */
+@media screen and (max-width: 480px) {
+    .calendar-section {
+        padding: 20px 16px;
+    }
+    
+    .calendar-grid {
+        gap: 6px;
+    }
+    
+    .calendar-day {
+        min-height: 45px;
+        padding: 4px;
+    }
+    
+    .day-number {
+        font-size: 0.85em;
+    }
+    
+    .day-count {
+        font-size: 0.65em;
+    }
+    
+    .calendar-day-header {
+        font-size: 0.75em;
+        padding: 8px 4px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.3em;
+    }
+    
+    .calendar-header h2 {
+        font-size: 1.2em;
+    }
+}
+
 @media screen and (max-width: 375px) {
     .habit-main {
         padding: 15px;
@@ -779,13 +817,36 @@
     
     .calendar-day {
         min-height: 40px;
+        padding: 2px;
     }
     
     .day-number {
-        font-size: 0.8em;
+        font-size: 0.75em;
     }
     
     .day-count {
-        font-size: 0.6em;
+        font-size: 0.55em;
+    }
+    
+    .calendar-day-header {
+        font-size: 0.7em;
+        padding: 6px 2px;
+    }
+    
+    .calendar-header h2 {
+        font-size: 1.1em;
+    }
+    
+    .week-day-name {
+        font-size: 1em;
+    }
+    
+    .week-day-date {
+        font-size: 0.8em;
+    }
+    
+    .week-completion-badge {
+        padding: 4px 10px;
+        font-size: 0.85em;
     }
 }
