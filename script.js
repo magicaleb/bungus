@@ -147,7 +147,11 @@ function showToast(message) {
     // Hide and remove toast after 3 seconds
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
     }, 3000);
 }
 
@@ -169,7 +173,7 @@ function showInstallInstructions(e) {
     if (isIOS) {
         showToast('Tap Share (↑) then "Add to Home Screen"');
     } else {
-        showToast('Use your browser\'s menu to install this app');
+        showToast("Use your browser's menu to install this app");
     }
 }
 
