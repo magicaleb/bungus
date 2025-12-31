@@ -244,6 +244,12 @@ function createCalendarDay(date, isOtherMonth, isToday = false) {
     const completed = dayCompletions.length;
     const total = habits.length;
     
+    // Normalize dates for comparison (set time to midnight)
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
+    const dateMidnight = new Date(date);
+    dateMidnight.setHours(0, 0, 0, 0);
+    
     // Add completion class
     if (completed > 0 && total > 0) {
         if (completed === total) {
@@ -251,7 +257,7 @@ function createCalendarDay(date, isOtherMonth, isToday = false) {
         } else {
             dayElement.classList.add('completed-some');
         }
-    } else if (date < new Date() && !isToday && total > 0) {
+    } else if (dateMidnight < todayMidnight && !isToday && total > 0) {
         // Only show red for past days if there are habits configured
         dayElement.classList.add('completed-none');
     }
