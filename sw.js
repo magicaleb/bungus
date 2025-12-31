@@ -49,9 +49,15 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME)
             .then(cache => {
               cache.put(event.request, responseToCache);
+            })
+            .catch(error => {
+              console.error('Failed to cache response:', error);
             });
           
           return response;
+        }).catch(error => {
+          console.error('Fetch failed:', error);
+          throw error;
         });
       })
   );
