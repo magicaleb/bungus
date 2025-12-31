@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- iPhone Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Habit Tracker">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="habits.css">
+    
+    <title>Habit Tracker</title>
+</head>
+<body>
+    <div id="bgimg"></div>
+    <div id="ui">
+        <header class="app-header">
+            <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+            <h1>📅 Habit Tracker</h1>
+            <p class="tagline">Build consistency, one day at a time</p>
+        </header>
+        
+        <main class="habit-main">
+            <!-- Today's Habits Section -->
+            <section class="today-section">
+                <div class="section-header">
+                    <h2 id="today-date">Today</h2>
+                    <button class="settings-button" id="settings-btn">⚙️</button>
+                </div>
+                
+                <div class="today-progress">
+                    <div class="progress-circle" id="progress-circle">
+                        <div class="progress-text">
+                            <span class="progress-count" id="progress-count">0/0</span>
+                            <span class="progress-label">completed</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="habits-list" id="habits-list">
+                    <!-- Habits will be dynamically added here -->
+                </div>
+            </section>
+            
+            <!-- Calendar Section -->
+            <section class="calendar-section">
+                <div class="calendar-header">
+                    <button class="nav-button" id="prev-period">←</button>
+                    <h2 id="calendar-title">Month Year</h2>
+                    <button class="nav-button" id="next-period">→</button>
+                </div>
+                
+                <div class="view-switcher">
+                    <button class="view-button active" data-view="month">Month</button>
+                    <button class="view-button" data-view="week">Week</button>
+                    <button class="view-button" data-view="day">Day</button>
+                </div>
+                
+                <div class="calendar-container">
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar will be dynamically generated -->
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Settings Modal -->
+        <div class="modal" id="settings-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Habit Settings</h2>
+                    <button class="close-button" id="close-settings">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description">Configure your daily habits (1-5 habits)</p>
+                    <div id="habit-inputs">
+                        <!-- Habit input fields will be added here -->
+                    </div>
+                    <button class="add-habit-button" id="add-habit-btn">+ Add Habit</button>
+                </div>
+                <div class="modal-footer">
+                    <button class="button-primary" id="save-settings">Save Habits</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="habits.js"></script>
+</body>
+</html>
