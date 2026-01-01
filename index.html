@@ -46,17 +46,8 @@
         </footer>
     </div>
     
-    <!-- Safe Area Inset Detection -->
-    <script>
-    (function(){
-      const topInset = parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue('--safe-top')
-      ) || 0;
-      if (topInset > 0) {
-        document.documentElement.classList.add('has-inset');
-      }
-    })();
-    </script>
+    <!-- PWA Utilities -->
+    <script src="pwa-utils.js"></script>
     
     <!-- External JavaScript -->
     <script src="script.js"></script>
