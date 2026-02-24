@@ -39,10 +39,17 @@
     opacity: 0.85;
 }
 
+/* Prevent the host #ui container from scrolling at the page level;
+   each panel scrolls independently within s52-main */
+#ui {
+    overflow: hidden;
+}
+
 .s52-main {
     flex: 1;
     overflow: hidden;
     position: relative;
+    min-height: 0; /* required so flex shrink works in column layouts */
 }
 
 .s52-panel {
@@ -59,7 +66,8 @@
 .s52-panel.active {
     opacity: 1;
     pointer-events: all;
-    position: relative;
+    /* position stays absolute so the panel fills s52-main and
+       can scroll within its bounded height */
 }
 
 .panel-content {
