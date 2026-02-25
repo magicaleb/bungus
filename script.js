@@ -11,6 +11,14 @@ const tools = [
         link: 'habits.html'
     },
     {
+        id: 'series52',
+        name: 'Series 52',
+        icon: '📊',
+        description: 'Municipal securities exam prep',
+        color: '#4a90d9',
+        link: 'series52.html'
+    },
+    {
         id: 'notes',
         name: 'Notes',
         icon: '📝',

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Series 52 Study">
+    <meta name="theme-color" content="#667eea">
+    <link rel="stylesheet" href="series52.css">
+    <title>Series 52 Study</title>
+</head>
+<body>
+    <div id="s52-root">
+        <header class="s52-header">
+            <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+            <div class="s52-header-title">
+                <h1>📊 Series 52</h1>
+                <p class="tagline">Municipal Securities Exam Prep</p>
+                <p class="version-tag">v1.6</p>
+            </div>
+        </header>
+
+        <main class="s52-main" id="s52-main">
+            <!-- HOME PANEL -->
+            <div class="s52-panel active" id="panel-home">
+                <div class="panel-content">
+                    <div class="home-stats-row" id="home-stats"></div>
+                    <div class="home-section">
+                        <h2 class="section-title">📈 Topic Mastery</h2>
+                        <div class="mastery-bars" id="mastery-bars"></div>
+                    </div>
+                    <div class="home-section">
+                        <h2 class="section-title">🎯 Weak Areas</h2>
+                        <div class="weak-areas" id="weak-areas"></div>
+                    </div>
+                    <div class="home-section">
+                        <h2 class="section-title">💡 Exam Strategy</h2>
+                        <div class="tips-list">
+                            <div class="tip-item">🎯 GO vs Revenue make up ~20% of the exam — know what backs each type.</div>
+                            <div class="tip-item">⏱️ 85 questions in 150 min ≈ 1:45 per question. Flag tough ones and revisit.</div>
+                            <div class="tip-item">📜 Memorize G-rule numbers: G-17, G-18, G-19, G-20, G-32, G-37, G-47.</div>
+                            <div class="tip-item">🔢 Key formula: TEY = Muni Yield ÷ (1 − Tax Rate). Also: price ↑ when yield ↓.</div>
+                        </div>
+                    </div>
+                    <div class="home-section">
+                        <h2 class="section-title">📋 Exam Overview</h2>
+                        <div class="exam-overview-card">
+                            <div class="exam-info-grid">
+                                <div class="exam-info-item"><span class="ei-label">Questions</span><span class="ei-value">85 total<br><small>(75 scored)</small></span></div>
+                                <div class="exam-info-item"><span class="ei-label">Time Limit</span><span class="ei-value">2.5 hours</span></div>
+                                <div class="exam-info-item"><span class="ei-label">Passing Score</span><span class="ei-value">72%</span></div>
+                                <div class="exam-info-item"><span class="ei-label">Exam Cost</span><span class="ei-value">$135</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDY PANEL -->
+            <div class="s52-panel" id="panel-study">
+                <div class="panel-content">
+                    <div class="study-topic-selector" id="study-topic-selector"></div>
+                    <div class="study-content" id="study-content"></div>
+                </div>
+            </div>
+
+            <!-- FLASHCARDS PANEL -->
+            <div class="s52-panel" id="panel-flashcards">
+                <div class="panel-content">
+                    <div class="fc-controls">
+                        <div class="fc-filter-row">
+                            <select class="fc-select" id="fc-topic-filter">
+                                <option value="all">All Topics</option>
+                            </select>
+                            <select class="fc-select" id="fc-diff-filter">
+                                <option value="all">All Levels</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="fc-meta" id="fc-meta"></div>
+                    </div>
+                    <div class="fc-area" id="fc-area">
+                        <div class="flashcard" id="flashcard" onclick="flipCard()">
+                            <div class="flashcard-inner" id="flashcard-inner">
+                                <div class="flashcard-front" id="fc-front"></div>
+                                <div class="flashcard-back" id="fc-back"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fc-buttons">
+                        <button class="fc-btn fc-btn-bad" id="fc-bad" onclick="rateCard('bad')">✗ Hard</button>
+                        <button class="fc-btn fc-btn-ok" id="fc-ok" onclick="rateCard('ok')">~ Ok</button>
+                        <button class="fc-btn fc-btn-good" id="fc-good" onclick="rateCard('good')">✓ Easy</button>
+                    </div>
+                    <div class="fc-nav-row">
+                        <button class="fc-nav-btn" id="fc-prev" onclick="prevCard()">← Prev</button>
+                        <span class="fc-progress-text" id="fc-prog-text"></span>
+                        <button class="fc-nav-btn" id="fc-next" onclick="nextCard()">Next →</button>
+                    </div>
+                    <button class="fc-shuffle-btn" onclick="shuffleCards()">🔀 Shuffle</button>
+                </div>
+            </div>
+
+            <!-- QUIZ PANEL -->
+            <div class="s52-panel" id="panel-quiz">
+                <div class="panel-content" id="quiz-content">
+                    <!-- quiz rendered by JS -->
+                </div>
+            </div>
+
+            <!-- DRILLS PANEL -->
+            <div class="s52-panel" id="panel-drills">
+                <div class="panel-content" id="drills-content">
+                    <!-- drills rendered by JS -->
+                </div>
+            </div>
+
+            <!-- VISUAL AIDS PANEL -->
+            <div class="s52-panel" id="panel-visual">
+                <div class="panel-content">
+                    <div class="visual-section">
+                        <h2 class="section-title">📊 Exam Topic Weights</h2>
+                        <div class="donut-wrap">
+                            <svg class="donut-chart" viewBox="0 0 200 200" id="donut-svg"></svg>
+                            <div class="donut-legend" id="donut-legend"></div>
+                        </div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">📉 Bond Price vs. Yield</h2>
+                        <div class="chart-container">
+                            <svg class="line-chart" viewBox="0 0 300 180" id="yield-svg"></svg>
+                            <p class="chart-caption">As yield ↑, bond price ↓ (inverse relationship)</p>
+                        </div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">🏛️ Municipal Bond Types</h2>
+                        <div class="bond-types-table" id="bond-types-table"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">📜 Key MSRB Rules</h2>
+                        <div class="msrb-rules-grid" id="msrb-rules-grid"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">🔄 Underwriting Process</h2>
+                        <div class="flowchart" id="underwriting-flowchart"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">💰 Tax Treatment Summary</h2>
+                        <div class="tax-table" id="tax-table"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">📐 Key Calculations</h2>
+                        <div class="calc-cards" id="calc-cards"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">⭐ Credit Rating Scales</h2>
+                        <div class="ratings-table" id="ratings-table"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">📈 Yield Curve Types</h2>
+                        <div class="chart-container">
+                            <svg class="line-chart" viewBox="0 0 300 180" id="yield-types-svg"></svg>
+                        </div>
+                        <div class="yield-type-legend" id="yield-type-legend"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">⚖️ GO vs Revenue Bonds</h2>
+                        <div class="comparison-grid" id="go-vs-rev"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">💼 Underwriting Spread Breakdown</h2>
+                        <div class="spread-visual" id="spread-visual"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="s52-nav" id="s52-nav">
+            <button class="nav-btn active" data-tab="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-btn" data-tab="study">
+                <span class="nav-icon">📚</span>
+                <span class="nav-label">Study</span>
+            </button>
+            <button class="nav-btn" data-tab="flashcards">
+                <span class="nav-icon">🃏</span>
+                <span class="nav-label">Cards</span>
+            </button>
+            <button class="nav-btn" data-tab="quiz">
+                <span class="nav-icon">❓</span>
+                <span class="nav-label">Quiz</span>
+            </button>
+            <button class="nav-btn" data-tab="drills">
+                <span class="nav-icon">⚡</span>
+                <span class="nav-label">Drills</span>
+            </button>
+            <button class="nav-btn" data-tab="visual">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Visual</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="series52.js"></script>
+</body>
+</html>
