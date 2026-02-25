@@ -1288,22 +1288,8 @@ function renderUnderwritingSpread() {
 
 // ==================== BOOT ====================
 
-// iOS Safari/PWA can misreport 100vh. Use window.innerHeight as the definitive source.
-function fixViewportHeight() {
-    const root = document.getElementById('s52-root');
-    if (!root) return;
-    root.style.height = window.innerHeight + 'px';
-}
-
-window.addEventListener('resize', fixViewportHeight);
-window.addEventListener('orientationchange', function () {
-    setTimeout(fixViewportHeight, 100);
-    setTimeout(fixViewportHeight, 350);
-});
-
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { fixViewportHeight(); initApp(); });
+    document.addEventListener('DOMContentLoaded', initApp);
 } else {
-    fixViewportHeight();
     initApp();
 }
