@@ -26,7 +26,14 @@ body {
 /* Root container: fixed, full screen, flex column — panels scroll inside here */
 #s52-root {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* svh = small viewport height (excludes floating browser chrome) */
+    height: 100vh;
+    height: 100svh;
+    /* JS in series52.js overrides height with window.innerHeight for max iOS reliability */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1399,3 +1406,129 @@ body {
 .flow-label { font-size: 0.88em; }
 .flow-step { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 10px 16px; text-align: center; max-width: 280px; width: 100%; }
 .table-hdr td { background: rgba(255,255,255,0.14); font-weight: 700; font-size: 0.85em; }
+
+/* ==================== HOME — EXAM STRATEGY TIPS ==================== */
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tip-item {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.88em;
+    line-height: 1.5;
+    border-left: 3px solid rgba(255,215,0,0.6);
+}
+
+/* ==================== VISUAL — GO VS REVENUE ==================== */
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.comparison-card {
+    background: rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px;
+    border-top: 3px solid transparent;
+}
+
+.go-card { border-top-color: #667eea; }
+.rev-card { border-top-color: #4ecdc4; }
+
+.comp-title {
+    font-size: 0.9em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.comp-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.8em;
+    line-height: 1.7;
+    opacity: 0.9;
+}
+
+.comp-list li::before { content: '• '; }
+
+/* ==================== VISUAL — YIELD CURVE TYPES ==================== */
+.yield-type-legend {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.yield-legend-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82em;
+    opacity: 0.9;
+}
+
+.yield-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ==================== VISUAL — UNDERWRITING SPREAD ==================== */
+.spread-bar-wrap {
+    display: flex;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.spread-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7em;
+    font-weight: 600;
+    color: white;
+    overflow: hidden;
+    padding: 0 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.spread-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.spread-leg-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.82em;
+}
+
+.spread-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+/* ==================== VISUAL — RATING TABLE DIVIDER ==================== */
+.table-divider td {
+    font-size: 0.78em;
+    opacity: 0.6;
+    font-style: italic;
+    text-align: center;
+    padding: 6px 4px;
+    border-top: 1px dashed rgba(255,255,255,0.2);
+    border-bottom: 1px dashed rgba(255,255,255,0.2);
+}

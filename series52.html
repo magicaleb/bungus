@@ -17,7 +17,7 @@
             <div class="s52-header-title">
                 <h1>📊 Series 52</h1>
                 <p class="tagline">Municipal Securities Exam Prep</p>
-                <p class="version-tag">v1.2</p>
+                <p class="version-tag">v1.3</p>
             </div>
         </header>
 
@@ -35,12 +35,12 @@
                         <div class="weak-areas" id="weak-areas"></div>
                     </div>
                     <div class="home-section">
-                        <h2 class="section-title">⚡ Quick Start</h2>
-                        <div class="quick-start-grid">
-                            <button class="qs-btn" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-                            <button class="qs-btn" onclick="startQuiz('random')">❓ Quick Quiz</button>
-                            <button class="qs-btn" onclick="switchTab('drills')">⚡ Drills</button>
-                            <button class="qs-btn" onclick="switchTab('visual')">📊 Visual Aids</button>
+                        <h2 class="section-title">💡 Exam Strategy</h2>
+                        <div class="tips-list">
+                            <div class="tip-item">🎯 GO vs Revenue make up ~20% of the exam — know what backs each type.</div>
+                            <div class="tip-item">⏱️ 85 questions in 150 min ≈ 1:45 per question. Flag tough ones and revisit.</div>
+                            <div class="tip-item">📜 Memorize G-rule numbers: G-17, G-18, G-19, G-20, G-32, G-37, G-47.</div>
+                            <div class="tip-item">🔢 Key formula: TEY = Muni Yield ÷ (1 − Tax Rate). Also: price ↑ when yield ↓.</div>
                         </div>
                     </div>
                     <div class="home-section">
@@ -154,6 +154,25 @@
                     <div class="visual-section">
                         <h2 class="section-title">📐 Key Calculations</h2>
                         <div class="calc-cards" id="calc-cards"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">⭐ Credit Rating Scales</h2>
+                        <div class="ratings-table" id="ratings-table"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">📈 Yield Curve Types</h2>
+                        <div class="chart-container">
+                            <svg class="line-chart" viewBox="0 0 300 180" id="yield-types-svg"></svg>
+                        </div>
+                        <div class="yield-type-legend" id="yield-type-legend"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">⚖️ GO vs Revenue Bonds</h2>
+                        <div class="comparison-grid" id="go-vs-rev"></div>
+                    </div>
+                    <div class="visual-section">
+                        <h2 class="section-title">💼 Underwriting Spread Breakdown</h2>
+                        <div class="spread-visual" id="spread-visual"></div>
                     </div>
                 </div>
             </div>

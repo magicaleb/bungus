@@ -8,7 +8,7 @@ const TOPICS = [
     { id: 'sales',       label: 'Sales & Market Making',            weight: 18, icon: '💼' },
     { id: 'research',    label: 'Research & Communications',        weight: 14, icon: '🔬' },
     { id: 'portfolio',   label: 'Portfolio Analysis',               weight: 14, icon: '📈' },
-    { id: 'accounts',    label: 'Customer Accounts',                weight: 14, icon: '👤' }
+    { id: 'regs',        label: 'Regulations & Compliance',         weight: 14, icon: '⚖️' }
 ];
 
 const STUDY_CONTENT = {
@@ -206,46 +206,53 @@ const STUDY_CONTENT = {
             }
         ]
     },
-    accounts: {
+    regs: {
         sections: [
             {
-                title: 'Account Types',
+                title: 'Key MSRB Rules',
                 bullets: [
-                    'Individual Account – one owner; simple.',
-                    'Joint Tenants with Right of Survivorship (JTWROS) – co-owners; deceased\'s share passes to survivor.',
-                    'Tenants in Common (TIC) – co-owners; deceased\'s share passes to estate.',
-                    'Custodial Account (UGMA/UTMA) – adult manages assets for minor.',
-                    'Trust Account – managed per trust agreement.'
+                    'Rule G-15: Customer confirmation requirements (description, price, yield, dated date, rating).',
+                    'Rule G-17: Dealers must deal fairly with all persons.',
+                    'Rule G-18: Best execution — dealers must seek best price for customer orders.',
+                    'Rule G-19: Suitability — recommendations must be suitable based on customer financial situation.',
+                    'Rule G-20: Gifts and gratuities — $100 maximum per person per year.',
+                    'Rule G-21: Advertising restrictions for municipal securities.',
+                    'Rule G-30: Fair pricing — dealer prices must be fair and reasonable.',
+                    'Rule G-32: Dealers must deliver Official Statement to buyers in the primary market.',
+                    'Rule G-37: Pay-to-play — prohibited political contributions ban negotiated business for 2 years.',
+                    'Rule G-47: Time of trade disclosure of material information to customers.'
                 ]
             },
             {
-                title: 'New Account Requirements',
+                title: 'SEC Rule 15c2-12 & Disclosure',
                 bullets: [
-                    'Customer Identification Program (CIP): verify name, DOB, address, ID number.',
-                    'Know Your Customer (KYC): understand financial situation, investment objectives.',
-                    'Suitability: recommendations must be suitable based on customer profile.',
-                    'MSRB Rule G-19: suitability obligations for municipal securities dealers.',
-                    'Anti-Money Laundering (AML): dealers must have AML programs.'
+                    'Requires underwriters to obtain and review an Official Statement before purchasing bonds.',
+                    'Requires dealers to have reasonable basis to believe issuer will comply with continuing disclosure.',
+                    'Establishes the Continuing Disclosure Agreement (CDA) requirement.',
+                    'Material event notices must be filed with EMMA within 10 business days.',
+                    'Annual financial information must be filed with EMMA by the CDA deadline.',
+                    'Material events: rating changes, defaults, calls, tender offers, amendments to rights of holders.'
                 ]
             },
             {
-                title: 'Confirmations & Statements',
+                title: 'EMMA & Trade Reporting',
                 bullets: [
-                    'MSRB Rule G-15: sets requirements for customer confirmations.',
-                    'Confirmations must include: description of security, price, yield, dated date, rating.',
-                    'Account statements must be sent at least quarterly.',
-                    'Extended settlement: can be negotiated but must be disclosed.'
+                    'EMMA (Electronic Municipal Market Access) — MSRB-operated free public platform.',
+                    'Dealers must report trade data to MSRB via RTRS (Real-Time Transaction Reporting System).',
+                    'Interdealer trades: reported within 15 minutes of execution.',
+                    'Customer trades: also reported within 15 minutes of execution.',
+                    'Official Statements, continuing disclosure documents, and trade data all available on EMMA.'
                 ]
             },
             {
-                title: 'MSRB Rules for Dealers',
+                title: 'Registration & Compliance',
                 bullets: [
-                    'Rule G-17: fair dealing.',
-                    'Rule G-18: best execution for customer orders.',
-                    'Rule G-19: suitability.',
-                    'Rule G-20: gifts and gratuities (limit $100/year per person).',
-                    'Rule G-37: political contributions; pay-to-play restrictions.',
-                    'Rule G-42: investment adviser duties (MMIA).'
+                    'Municipal securities dealers must register with both FINRA and the MSRB.',
+                    'Municipal advisors must register with the SEC and MSRB (Rule G-42 fiduciary duty).',
+                    'AML (Anti-Money Laundering): dealers must have written AML compliance programs.',
+                    'Supervision: dealers must establish written supervisory procedures (Rule G-27).',
+                    'Books and records: maintained per MSRB Rules G-8 (books) and G-9 (record retention).',
+                    'Political contributions records: tracked under Rule G-37 (pay-to-play).'
                 ]
             }
         ]
@@ -355,30 +362,30 @@ const FLASHCARDS = [
       front: 'Which portfolio structure has bonds maturing each year?',
       back: 'A laddered portfolio – bonds mature in successive years, reducing reinvestment and interest rate risk.' },
     // Customer Accounts
-    { id: 33, topic: 'accounts', difficulty: 'easy',
-      front: 'What does JTWROS stand for, and what happens when one owner dies?',
-      back: 'Joint Tenants With Right Of Survivorship. The deceased owner\'s share passes automatically to the surviving owner(s).' },
-    { id: 34, topic: 'accounts', difficulty: 'medium',
-      front: 'What is a Tenants in Common (TIC) account?',
-      back: 'A joint account where each owner holds a specified interest. When one owner dies, their share passes to their estate (not the survivor).' },
-    { id: 35, topic: 'accounts', difficulty: 'medium',
-      front: 'What does MSRB Rule G-19 require?',
-      back: 'Dealers must have a reasonable basis to believe a recommendation is suitable based on the customer\'s financial situation and needs.' },
-    { id: 36, topic: 'accounts', difficulty: 'easy',
+    { id: 33, topic: 'regs', difficulty: 'medium',
+      front: 'What does SEC Rule 15c2-12 require of underwriters?',
+      back: 'Underwriters must obtain and review the Official Statement, and have a reasonable basis to believe the issuer will comply with continuing disclosure agreements filed on EMMA.' },
+    { id: 34, topic: 'regs', difficulty: 'easy',
+      front: 'What is EMMA?',
+      back: 'Electronic Municipal Market Access — the MSRB\'s free public platform for municipal market disclosures, trade data, Official Statements, and continuing disclosure filings.' },
+    { id: 35, topic: 'regs', difficulty: 'medium',
+      front: 'What does MSRB Rule G-32 require dealers to deliver?',
+      back: 'The Official Statement to buyers in the primary market at or before the settlement date.' },
+    { id: 36, topic: 'regs', difficulty: 'easy',
       front: 'What is the gift limit under MSRB Rule G-20?',
       back: '$100 per person per year. Gifts above this amount are prohibited.' },
-    { id: 37, topic: 'accounts', difficulty: 'hard',
-      front: 'What does MSRB Rule G-37 address?',
-      back: 'Pay-to-play restrictions. Dealers who make certain political contributions to officials are prohibited from doing negotiated muni business with that issuer for 2 years.' },
-    { id: 38, topic: 'accounts', difficulty: 'medium',
-      front: 'Which MSRB rule sets requirements for customer trade confirmations?',
-      back: 'MSRB Rule G-15. Confirmations must include security description, price, yield, dated date, rating, and other required details.' },
-    { id: 39, topic: 'accounts', difficulty: 'medium',
-      front: 'What is required under a Customer Identification Program (CIP)?',
-      back: 'Collect and verify: customer name, date of birth, address, and ID number (SSN or TIN for US persons).' },
-    { id: 40, topic: 'accounts', difficulty: 'easy',
-      front: 'How often must account statements be sent to customers?',
-      back: 'At least quarterly.' }
+    { id: 37, topic: 'regs', difficulty: 'hard',
+      front: 'What does MSRB Rule G-37 (pay-to-play) prohibit?',
+      back: 'Dealers who make certain political contributions to municipal officials are barred from conducting negotiated underwriting business with that issuer for 2 years.' },
+    { id: 38, topic: 'regs', difficulty: 'medium',
+      front: 'Which MSRB rule governs time of trade disclosure?',
+      back: 'Rule G-47 — dealers must disclose material information about a security at or before the time of trade with a customer.' },
+    { id: 39, topic: 'regs', difficulty: 'medium',
+      front: 'What must a Continuing Disclosure Agreement include?',
+      back: 'Annual financial information filings to EMMA by a specified deadline, and material event notices (rating changes, defaults, calls, etc.) within 10 business days.' },
+    { id: 40, topic: 'regs', difficulty: 'easy',
+      front: 'Within how many minutes must municipal trades be reported to the MSRB?',
+      back: '15 minutes via the Real-Time Transaction Reporting System (RTRS), for both interdealer and customer trades.' }
 ];
 
 const QUIZ_QUESTIONS = [
@@ -492,27 +499,27 @@ const QUIZ_QUESTIONS = [
       options: ['+3.5%', '-3.5%', '+7%', '-0.5%'],
       correct: 1,
       explanation: '% Price Change ≈ –Modified Duration × Change in Yield = –7 × 0.5% = –3.5%.' },
-    // accounts
-    { id: 22, topic: 'accounts', difficulty: 'easy',
-      question: 'In a JTWROS account, when one owner dies, their share:',
-      options: ['Passes to their estate', 'Passes to surviving account owner(s)', 'Reverts to the broker-dealer', 'Is split equally among heirs'],
-      correct: 1,
-      explanation: 'In JTWROS, the right of survivorship means the deceased\'s share automatically passes to the surviving owner(s).' },
-    { id: 23, topic: 'accounts', difficulty: 'medium',
-      question: 'MSRB Rule G-37 restricts dealers who make certain political contributions from conducting:',
-      options: ['Secondary market trades for 1 year', 'Negotiated underwriting business for 2 years', 'Any municipal business for 5 years', 'Competitive underwriting for 3 years'],
-      correct: 1,
-      explanation: 'G-37 (pay-to-play) bars dealers who make prohibited political contributions from engaging in negotiated muni underwriting with that issuer for 2 years.' },
-    { id: 24, topic: 'accounts', difficulty: 'easy',
+    // regs
+    { id: 22, topic: 'regs', difficulty: 'easy',
+      question: 'Under MSRB Rule G-37, a dealer who makes a prohibited political contribution is banned from negotiated muni underwriting for how long?',
+      options: ['6 months', '1 year', '2 years', '5 years'],
+      correct: 2,
+      explanation: 'G-37 (pay-to-play) prohibits dealers from conducting negotiated underwriting business with the issuer for 2 years after a prohibited political contribution.' },
+    { id: 23, topic: 'regs', difficulty: 'easy',
       question: 'Under MSRB Rule G-20, the maximum gift a dealer may give to any one person per year is:',
       options: ['$50', '$100', '$250', '$500'],
       correct: 1,
       explanation: 'G-20 limits gifts and gratuities to $100 per person per year to prevent conflicts of interest.' },
-    { id: 25, topic: 'accounts', difficulty: 'medium',
-      question: 'Which rule requires a reasonable suitability basis for municipal securities recommendations?',
-      options: ['G-17', 'G-18', 'G-19', 'G-20'],
+    { id: 24, topic: 'regs', difficulty: 'medium',
+      question: 'What does SEC Rule 15c2-12 require underwriters to obtain and review before purchasing bonds?',
+      options: ['Credit Report', 'Official Statement', 'EMMA Trade Data', 'Sinking Fund Agreement'],
+      correct: 1,
+      explanation: 'SEC Rule 15c2-12 requires underwriters to obtain and review the Official Statement before purchasing municipal bonds from the issuer.' },
+    { id: 25, topic: 'regs', difficulty: 'medium',
+      question: 'Within how many minutes must municipal interdealer trades be reported to the MSRB?',
+      options: ['5 minutes', '10 minutes', '15 minutes', '30 minutes'],
       correct: 2,
-      explanation: 'MSRB Rule G-19 requires dealers to have a reasonable basis to believe recommendations are suitable for the customer.' }
+      explanation: 'MSRB rules require interdealer (and customer) municipal trade reports to RTRS (Real-Time Transaction Reporting System) within 15 minutes of execution.' }
 ];
 
 const DRILLS = [
@@ -543,10 +550,10 @@ const DRILLS = [
     { id: 9, topic: 'portfolio', type: 'fill',
       prompt: '% Price Change ≈ − Modified Duration × ___',
       answer: 'change in yield', hint: 'What causes the price change?' },
-    { id: 10, topic: 'accounts', type: 'fill',
+    { id: 10, topic: 'regs', type: 'fill',
       prompt: 'Under MSRB Rule G-20, the gift limit is $___ per person per year.',
       answer: '100', hint: 'Three digits' },
-    { id: 11, topic: 'accounts', type: 'fill',
+    { id: 11, topic: 'regs', type: 'fill',
       prompt: 'MSRB Rule G-37 bars dealers from negotiated underwriting for ___ years after a prohibited political contribution.',
       answer: '2', hint: 'Number of years' },
     { id: 12, topic: 'muniChar', type: 'fill',
@@ -558,9 +565,9 @@ const DRILLS = [
     { id: 14, topic: 'research', type: 'fill',
       prompt: 'The minimum investment-grade rating from Moody\'s is ___.',
       answer: 'Baa3', hint: 'One step above speculative grade' },
-    { id: 15, topic: 'accounts', type: 'fill',
-      prompt: 'MSRB Rule G-___ governs suitability of recommendations.',
-      answer: '19', hint: 'Between G-18 and G-20' }
+    { id: 15, topic: 'regs', type: 'fill',
+      prompt: 'Municipal trade reports must be submitted to MSRB within ___ minutes via RTRS.',
+      answer: '15', hint: 'About a quarter hour' }
 ];
 
 // ==================== STATE ====================
@@ -1032,6 +1039,10 @@ function renderVisual() {
     renderUnderwritingFlowchart();
     renderTaxTable();
     renderCalcCards();
+    renderRatingScales();
+    renderYieldCurveTypes();
+    renderGOvsRevenue();
+    renderUnderwritingSpread();
 }
 
 function renderDonutChart() {
@@ -1172,10 +1183,127 @@ function renderCalcCards() {
         </div>`).join('');
 }
 
+function renderRatingScales() {
+    const el = document.getElementById('ratings-table');
+    if (!el) return;
+    const rows = [
+        ['Quality', "Moody's", 'S&P / Fitch'],
+        ['Highest Quality', 'Aaa', 'AAA'],
+        ['Very High', 'Aa1–Aa3', 'AA+/AA/AA−'],
+        ['High Grade', 'A1–A3', 'A+/A/A−'],
+        ['Upper Medium', 'Baa1–Baa3', 'BBB+/BBB/BBB−'],
+        ['— Investment Grade Cutoff —', '', ''],
+        ['Speculative', 'Ba1–Ba3', 'BB+/BB/BB−'],
+        ['Highly Speculative', 'B1–B3', 'B+/B/B−'],
+        ['Default Risk', 'Caa–C', 'CCC–C']
+    ];
+    el.innerHTML = `<table class="data-table">
+        ${rows.map((row, i) => {
+            if (row[0].startsWith('—')) {
+                return `<tr class="table-divider"><td colspan="3">${row[0]}</td></tr>`;
+            }
+            return `<tr class="${i === 0 ? 'table-hdr' : ''}">${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+        }).join('')}
+    </table>`;
+}
+
+function renderYieldCurveTypes() {
+    const svg = document.getElementById('yield-types-svg');
+    const legend = document.getElementById('yield-type-legend');
+    if (!svg) return;
+    const normal   = [[10,155],[60,130],[110,108],[160,90],[210,75],[265,62],[295,55]];
+    const inverted = [[10,50], [60,72], [110,95],[160,115],[210,132],[265,148],[295,155]];
+    const flat     = [[10,102],[60,102],[110,102],[160,102],[210,102],[265,102],[295,102]];
+    const makePath = (pts, color) => {
+        const d = 'M ' + pts.map(p => p.join(',')).join(' L ');
+        return `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    };
+    svg.innerHTML = `
+        <text x="5" y="18" fill="rgba(255,255,255,0.55)" font-size="9">High Rate</text>
+        <text x="5" y="172" fill="rgba(255,255,255,0.55)" font-size="9">Low Rate</text>
+        <text x="8" y="180" fill="rgba(255,255,255,0.55)" font-size="8">Short</text>
+        <text x="248" y="180" fill="rgba(255,255,255,0.55)" font-size="8">Long term</text>
+        ${makePath(normal, '#4ecdc4')}
+        ${makePath(inverted, '#ff6b6b')}
+        ${makePath(flat, '#ffd93d')}
+    `;
+    if (legend) {
+        legend.innerHTML = `
+            <div class="yield-legend-row"><span class="yield-dot" style="background:#4ecdc4"></span>Normal — long rates &gt; short rates (most common; healthy economy)</div>
+            <div class="yield-legend-row"><span class="yield-dot" style="background:#ff6b6b"></span>Inverted — short rates &gt; long rates (recession warning signal)</div>
+            <div class="yield-legend-row"><span class="yield-dot" style="background:#ffd93d"></span>Flat — rates similar across all maturities (transition period)</div>
+        `;
+    }
+}
+
+function renderGOvsRevenue() {
+    const el = document.getElementById('go-vs-rev');
+    if (!el) return;
+    el.innerHTML = `
+        <div class="comparison-card go-card">
+            <div class="comp-title">🏛️ General Obligation</div>
+            <ul class="comp-list">
+                <li>Backed by full taxing power</li>
+                <li>Requires voter approval</li>
+                <li>Typically higher credit quality</li>
+                <li>Used for: schools, roads</li>
+                <li>Risk: political / tax limits</li>
+            </ul>
+        </div>
+        <div class="comparison-card rev-card">
+            <div class="comp-title">💰 Revenue Bond</div>
+            <ul class="comp-list">
+                <li>Backed by project revenues only</li>
+                <li>No voter approval needed</li>
+                <li>Coverage ratio is key metric</li>
+                <li>Used for: toll roads, utilities</li>
+                <li>Risk: revenue shortfall</li>
+            </ul>
+        </div>
+    `;
+}
+
+function renderUnderwritingSpread() {
+    const el = document.getElementById('spread-visual');
+    if (!el) return;
+    const parts = [
+        { label: 'Mgmt Fee', pct: 15, color: '#667eea', note: 'Earned by the managing underwriter' },
+        { label: 'UW Fee', pct: 25, color: '#f093fb', note: 'Compensation for underwriting risk' },
+        { label: 'Takedown', pct: 60, color: '#4ecdc4', note: 'Selling concession — largest component' }
+    ];
+    el.innerHTML = `
+        <div class="spread-bar-wrap">
+            ${parts.map(p => `<div class="spread-seg" style="width:${p.pct}%;background:${p.color}">${p.label}</div>`).join('')}
+        </div>
+        <div class="spread-legend">
+            ${parts.map(p => `
+                <div class="spread-leg-item">
+                    <span class="spread-dot" style="background:${p.color}"></span>
+                    <span><strong>${p.label} (${p.pct}%)</strong> — ${p.note}</span>
+                </div>`).join('')}
+        </div>
+        <p class="chart-caption" style="margin-top:10px">Total Spread = Mgmt Fee + Underwriting Fee + Takedown (selling concession)</p>
+    `;
+}
+
 // ==================== BOOT ====================
 
+// iOS Safari/PWA can misreport 100vh. Use window.innerHeight as the definitive source.
+function fixViewportHeight() {
+    const root = document.getElementById('s52-root');
+    if (!root) return;
+    root.style.height = window.innerHeight + 'px';
+}
+
+window.addEventListener('resize', fixViewportHeight);
+window.addEventListener('orientationchange', function () {
+    setTimeout(fixViewportHeight, 100);
+    setTimeout(fixViewportHeight, 350);
+});
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', function () { fixViewportHeight(); initApp(); });
 } else {
+    fixViewportHeight();
     initApp();
 }
