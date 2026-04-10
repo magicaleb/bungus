@@ -20,7 +20,6 @@ const WORDS = [
     { word: 'database',   hint: 'Technology' },
     { word: 'interface',  hint: 'Programming' },
     { word: 'network',    hint: 'Technology' },
-    { word: 'keyboard',   hint: 'Computer Hardware' },
     { word: 'hospital',   hint: 'Place' },
     { word: 'furniture',  hint: 'Home' },
     { word: 'sandwich',   hint: 'Food' },
