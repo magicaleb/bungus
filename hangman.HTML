@@ -1,595 +1,681 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Hangman">
-    <meta name="theme-color" content="#1a1a2e">
-    <title>Hangman</title>
-    <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Hangman</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
 
-        :root {
-            --bg: #1a1a2e;
-            --surface: #16213e;
-            --accent: #e94560;
-            --accent-dim: #c73652;
-            --text: #eaeaea;
-            --text-dim: #8892a4;
-            --correct: #4caf50;
-            --wrong: #e94560;
-            --key-bg: #0f3460;
-            --key-hover: #1a4a7a;
-            --key-disabled: #2a2a3e;
-            --gallows: #eaeaea;
-            --radius: 10px;
-            --shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
+:root{--bg:#f4efe6;--paper:#f8f4ec;--ink:#1a1814;--faint:#cfc6b6;--toolbar:#ece6dc}
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            min-height: 100dvh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 
-        #app {
-            width: 100%;
-            max-width: 600px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+html,body{height:100%;width:100%;overflow:hidden;font-family:‘Caveat’,cursive;background:#ddd}
 
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: var(--surface);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
+#frame{position:fixed;inset:0;background:#e9e3d7}
 
-        header h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--accent);
-            text-transform: uppercase;
-        }
+#app{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));bottom:20px;left:max(10px,env(safe-area-inset-left));display:flex;flex-direction:column;background:var(--bg);border-radius:10px;border:2px solid rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
 
-        #score {
-            display: flex;
-            gap: 16px;
-            font-size: 0.9rem;
-            color: var(--text-dim);
-        }
+#drawCanvas{flex:1;width:100%;display:block;cursor:crosshair;touch-action:none;background:linear-gradient(var(--paper),var(--paper))}
 
-        #score strong {
-            color: var(--text);
-        }
+#toolbar{background:linear-gradient(var(--toolbar),#e6dfd3);border-top:1px solid var(--faint);display:flex;align-items:center;justify-content:space-around;padding:10px 8px max(10px,env(safe-area-inset-bottom)) 8px;flex-shrink:0}
 
-        main {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
+.tool-btn{font-family:‘Space Mono’,monospace;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#f7f2e8;border:1px solid var(--faint);border-radius:10px;padding:7px 13px;color:#6f6a61;cursor:pointer}
 
-        #gallows-section {
-            flex: 0 0 auto;
-        }
+.tool-btn.active{background:var(--ink);color:#1a1814;border-color:var(--ink)}
 
-        #gallows {
-            width: 160px;
-            height: 176px;
-        }
+#peek{position:absolute;bottom:0;right:2px;font-family:‘Space Mono’,monospace;font-size:10px;font-weight:700;letter-spacing:.04em;opacity:0;pointer-events:none;color:#666}
 
-        .gallows-line {
-            stroke: var(--gallows);
-            stroke-width: 3;
-            stroke-linecap: round;
-        }
+#peek.show{opacity:1}
 
-        .body-part {
-            stroke: var(--accent);
-            stroke-width: 4;
-            stroke-linecap: round;
-            fill: none;
-            transition: opacity 0.3s ease;
-        }
+#perfDot{position:absolute;bottom:2px;left:8px;font-family:‘Space Mono’,monospace;font-size:14px;color:#666;opacity:0}
 
-        circle.body-part {
-            fill: none;
-        }
+#perfDot.show{opacity:.9}
 
-        .body-part.hidden {
-            opacity: 0;
-        }
+#settingsPanel{position:fixed;inset:0;background:#f4efe6;display:none;flex-direction:column;overflow:auto;padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));z-index:500}
 
-        #word-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+#settingsHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 
-        .hint {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            min-height: 1.2em;
-        }
+#settingsHeader h1{font-family:‘Space Mono’,monospace;font-size:16px}
 
-        #word-display {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
+#closeSettings{font-family:‘Space Mono’,monospace;font-size:12px;padding:6px 10px}
 
-        .letter-slot {
-            width: 28px;
-            height: 38px;
-            border-bottom: 3px solid var(--text-dim);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            transition: color 0.2s, border-color 0.2s;
-        }
+.section{margin-bottom:28px}
 
-        .letter-slot.revealed {
-            color: var(--correct);
-            border-color: var(--correct);
-        }
+.section h2{font-family:‘Space Mono’,monospace;font-size:14px;margin-bottom:8px}
 
-        .letter-slot.space {
-            border-bottom: none;
-            width: 14px;
-        }
+#wordView{font-family:monospace;font-size:12px;background:white;border:1px solid #ccc;padding:8px;max-height:200px;overflow:auto}
 
-        #wrong-letters {
-            font-size: 0.9rem;
-            color: var(--wrong);
-            min-height: 1.4em;
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
+#depthStats{font-family:monospace;font-size:12px;margin-top:8px;background:white;border:1px solid #ccc;padding:8px}
 
-        #wrong-letters .label {
-            color: var(--text-dim);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+#firstLetter{font-family:monospace;font-size:12px;margin-top:6px;background:white;border:1px solid #ccc;padding:6px;display:inline-block}
 
-        #wrong-list {
-            font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
+#addWordInput{width:100%;padding:6px;margin-top:6px;font-family:monospace}
 
-        #keyboard-section {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 14px;
-            box-shadow: var(--shadow);
-        }
+#newListName{width:100%;padding:6px;margin-top:6px;font-family:monospace}
 
-        #keyboard {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: center;
-        }
+#newListWords{width:100%;height:140px;padding:6px;margin-top:6px;font-family:monospace}
 
-        .key {
-            width: 38px;
-            height: 38px;
-            background: var(--key-bg);
-            color: var(--text);
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.1s, opacity 0.2s;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+#helpOverlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;z-index:999}
 
-        .key:hover:not(:disabled) {
-            background: var(--key-hover);
-            transform: translateY(-2px);
-        }
+#helpOverlay .line{position:absolute;left:0;right:0;border-top:2px dashed #fff}
 
-        .key:active:not(:disabled) {
-            transform: translateY(0);
-        }
+#helpOverlay .box{position:absolute;border:2px solid red;border-radius:8px}
 
-        .key:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            transform: none;
-        }
+#helpOverlay .content{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:90%;max-width:420px;max-height:80vh;overflow:auto;color:#fff;font-family:‘Space Mono’,monospace;font-size:13px;line-height:1.6;background:rgba(0,0,0,.6);padding:18px;border-radius:14px}
 
-        .key.correct {
-            background: var(--correct);
-            opacity: 1;
-        }
+#helpOverlay button{position:absolute;top:16px;right:16px}
 
-        .key.wrong {
-            background: var(--wrong);
-            opacity: 0.45;
-        }
+/* ── Explore Panel ── */
+#explorePanel{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;overflow:hidden;z-index:600;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
 
-        #message-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            backdrop-filter: blur(4px);
-        }
+#exploreHeader{display:flex;justify-content:space-between;align-items:center;flex-shrink:0;margin-bottom:10px}
 
-        #message-overlay.hidden {
-            display: none;
-        }
+#exploreTitle{font-family:'Space Mono',monospace;font-size:14px;font-weight:700}
 
-        #message-box {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 36px 40px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            max-width: 320px;
-            width: 90%;
-        }
+#explorePath{font-family:'Space Mono',monospace;font-size:11px;color:#888;min-height:18px;overflow-x:auto;white-space:nowrap;flex-shrink:0;margin-bottom:8px;padding-bottom:2px}
 
-        #message-title {
-            font-size: 2rem;
-            font-weight: 800;
-        }
+.path-item{display:inline-block;padding:1px 5px;border-radius:4px;background:#e6dfd3;margin:0 1px;font-weight:700}
 
-        #message-word {
-            font-size: 1rem;
-            color: var(--text-dim);
-            word-break: break-all;
-        }
+.path-item.yes{background:#c8eac8;color:#2a6b2a}
 
-        #message-word span {
-            color: var(--text);
-            font-weight: 600;
-            text-transform: uppercase;
-        }
+.path-item.no{background:#f5c8c8;color:#8b1a1a}
 
-        #play-again-btn {
-            margin-top: 8px;
-            padding: 12px 28px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.1s;
-            letter-spacing: 1px;
-        }
+.path-sep{color:#bbb;margin:0 2px}
 
-        #play-again-btn:hover {
-            background: var(--accent-dim);
-            transform: translateY(-2px);
-        }
+#exploreQuestion{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;text-align:center;padding:14px 8px;background:#fff;border:2px solid var(--faint);border-radius:12px;flex-shrink:0;margin-bottom:10px;letter-spacing:.04em}
 
-        #play-again-btn:active {
-            transform: translateY(0);
-        }
+#exploreBranches{display:flex;gap:10px;flex-shrink:0;margin-bottom:10px}
 
-        @media (max-width: 420px) {
-            main {
-                flex-direction: column;
-                align-items: center;
-            }
+.explore-card{flex:1;background:#fff;border:2px solid var(--faint);border-radius:14px;padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:background .15s,border-color .15s;-webkit-tap-highlight-color:transparent;user-select:none}
 
-            #gallows {
-                width: 130px;
-                height: 143px;
-            }
+.explore-card:active{opacity:.75}
 
-            #word-section {
-                width: 100%;
-                align-items: center;
-            }
+.yes-card{border-color:#a0d8a0}
 
-            #word-display {
-                justify-content: center;
-            }
+.no-card{border-color:#e8a8a8}
 
-            #wrong-letters {
-                justify-content: center;
-            }
+.card-label{font-family:'Space Mono',monospace;font-size:13px;font-weight:700}
 
-            .key {
-                width: 34px;
-                height: 34px;
-                font-size: 0.85rem;
-            }
-        }
-    </style>
+.yes-card .card-label{color:#2a6b2a}
+
+.no-card .card-label{color:#8b1a1a}
+
+.card-next{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--ink)}
+
+.card-count{font-family:'Space Mono',monospace;font-size:11px;color:#888}
+
+.card-leaf{font-family:'Space Mono',monospace;font-size:12px;color:#555;text-align:center;word-break:break-all}
+
+#exploreWordList{flex:1;overflow-y:auto;background:#fff;border:1px solid var(--faint);border-radius:10px;padding:8px 10px}
+
+.explore-words-header{font-family:'Space Mono',monospace;font-size:11px;color:#888;margin-bottom:6px}
+
+.explore-words-grid{display:flex;flex-wrap:wrap;gap:4px}
+
+.explore-word{font-family:'Space Mono',monospace;font-size:11px;background:#f0ece3;border-radius:4px;padding:2px 6px;color:var(--ink)}
+
+#exploreLeafCard{background:#fff;border:2px solid #a0d8a0;border-radius:14px;padding:18px;text-align:center;flex-shrink:0;margin-bottom:10px;display:none}
+
+#exploreLeafCard .leaf-label{font-family:'Space Mono',monospace;font-size:11px;color:#888;margin-bottom:4px}
+
+#exploreLeafCard .leaf-word{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:.06em}
+</style>
+
 </head>
 <body>
-    <div id="app">
-        <header>
-            <h1>Hangman</h1>
-            <div id="score">
-                <span>Wins: <strong id="wins">0</strong></span>
-                <span>Losses: <strong id="losses">0</strong></span>
-            </div>
-        </header>
-
-        <main>
-            <section id="gallows-section" aria-label="Hangman figure">
-                <svg id="gallows" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Gallows structure (always visible) -->
-                    <line x1="20" y1="210" x2="180" y2="210" class="gallows-line"/>
-                    <line x1="60" y1="210" x2="60" y2="20"  class="gallows-line"/>
-                    <line x1="60" y1="20"  x2="130" y2="20" class="gallows-line"/>
-                    <line x1="130" y1="20" x2="130" y2="45" class="gallows-line"/>
-                    <!-- Body parts (shown on wrong guesses) -->
-                    <circle id="head"    cx="130" cy="60"  r="15"         class="body-part hidden"/>
-                    <line   id="body"    x1="130" y1="75"  x2="130" y2="140" class="body-part hidden"/>
-                    <line   id="arm-l"   x1="130" y1="90"  x2="100" y2="120" class="body-part hidden"/>
-                    <line   id="arm-r"   x1="130" y1="90"  x2="160" y2="120" class="body-part hidden"/>
-                    <line   id="leg-l"   x1="130" y1="140" x2="100" y2="175" class="body-part hidden"/>
-                    <line   id="leg-r"   x1="130" y1="140" x2="160" y2="175" class="body-part hidden"/>
-                </svg>
-            </section>
-
-            <section id="word-section" aria-label="Word to guess">
-                <div id="hint" class="hint"></div>
-                <div id="word-display" aria-live="polite"></div>
-                <div id="wrong-letters" aria-live="polite">
-                    <span class="label">Wrong:</span>
-                    <span id="wrong-list"></span>
-                </div>
-            </section>
-        </main>
-
-        <section id="keyboard-section" aria-label="Letter keyboard">
-            <div id="keyboard"></div>
-        </section>
-
-        <div id="message-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="message-title">
-            <div id="message-box">
-                <p id="message-title"></p>
-                <p id="message-word"></p>
-                <button id="play-again-btn">Play Again</button>
-            </div>
-        </div>
+<div id="frame">
+  <div id="app">
+    <canvas id="drawCanvas"></canvas>
+    <div id="toolbar">
+      <button class="tool-btn active" id="btnDraw">Draw</button>
+      <button class="tool-btn" id="btnErase">Erase</button>
+      <button class="tool-btn" id="btnUndo">Undo</button>
+      <button class="tool-btn" id="btnClear">Clear</button>
+      <button class="tool-btn" id="btnHangman">Hangman</button>
+      <button class="tool-btn" id="btnSolve">Solve</button>
+      <button class="tool-btn" id="btnExplore" style="display:none">Explore</button>
     </div>
+    <div id="peek"></div>
+    <div id="perfDot">.</div>
+  </div>
+</div>
 
-    <script>
-        'use strict';
+<div id="settingsPanel">
+  <div id="settingsHeader">
+    <div><h1>Settings</h1><div style="font-family:'Space Mono',monospace;font-size:10px;color:#999;margin-top:2px">V1.2.0 · Apr 10, 2026</div></div>
+    <button id="closeSettings">Close</button>
+  </div>
+  <div class="section">
+    <h2>Active Word List</h2>
+    <select id="listSelect"></select>
+    <button id="useList">Use Selected</button>
+    <div id="firstLetter"></div>
+  </div>
+  <div class="section">
+    <h2>Create New List</h2>
+    <input id="newListName" placeholder="LIST NAME"/>
+    <textarea id="newListWords" placeholder="PASTE WORDS (ONE PER LINE)"></textarea>
+    <button id="createListBtn">Create List</button>
+  </div>
+  <div class="section">
+    <h2>Add Word To Current List</h2>
+    <input id="addWordInput" placeholder="TYPE WORD AND PRESS ENTER"/>
+  </div>
+  <div class="section">
+    <h2>Words</h2>
+    <div id="wordView"></div>
+  </div>
+  <div class="section">
+    <h2>Decision Depth</h2>
+    <div id="depthStats"></div>
+  </div>
+  <div class="section">
+    <h2>Explore Mode</h2>
+    <label style="font-family:'Space Mono',monospace;font-size:12px;display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="exploreModeToggle" style="width:16px;height:16px;cursor:pointer">
+      Enable Explore List Mode
+    </label>
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#999;margin-top:6px">Adds an Explore button to the toolbar for visual tree navigation.</div>
+  </div>
+</div>
 
-        const WORDS = [
-            { word: 'javascript', hint: 'Programming Language' },
-            { word: 'algorithm',  hint: 'Computer Science' },
-            { word: 'keyboard',   hint: 'Computer Hardware' },
-            { word: 'elephant',   hint: 'Animal' },
-            { word: 'mountain',   hint: 'Geography' },
-            { word: 'library',    hint: 'Place / Programming' },
-            { word: 'python',     hint: 'Programming Language' },
-            { word: 'umbrella',   hint: 'Everyday Object' },
-            { word: 'chocolate',  hint: 'Food' },
-            { word: 'telescope',  hint: 'Science' },
-            { word: 'penguin',    hint: 'Animal' },
-            { word: 'notebook',   hint: 'Everyday Object' },
-            { word: 'developer',  hint: 'Profession' },
-            { word: 'browser',    hint: 'Technology' },
-            { word: 'function',   hint: 'Programming' },
-            { word: 'variable',   hint: 'Programming' },
-            { word: 'database',   hint: 'Technology' },
-            { word: 'interface',  hint: 'Programming' },
-            { word: 'network',    hint: 'Technology' },
-            { word: 'hospital',   hint: 'Place' },
-            { word: 'furniture',  hint: 'Home' },
-            { word: 'sandwich',   hint: 'Food' },
-            { word: 'sunshine',   hint: 'Weather' },
-            { word: 'waterfall',  hint: 'Nature' },
-            { word: 'dinosaur',   hint: 'Animal' },
-            { word: 'calendar',   hint: 'Everyday Object' },
-            { word: 'computer',   hint: 'Technology' },
-            { word: 'universe',   hint: 'Science' },
-            { word: 'adventure',  hint: 'Concept' },
-        ];
 
-        const MAX_WRONG = 6;
 
-        const BODY_PART_IDS = ['head', 'body', 'arm-l', 'arm-r', 'leg-l', 'leg-r'];
+<div id="explorePanel">
+  <div id="exploreHeader">
+    <button class="tool-btn" id="exploreBack">← Back</button>
+    <div id="exploreTitle">Explore List</div>
+    <button class="tool-btn" id="exploreClose">Close</button>
+  </div>
+  <div id="explorePath"></div>
+  <div id="exploreQuestion"></div>
+  <div id="exploreLeafCard">
+    <div class="leaf-label">WORD</div>
+    <div class="leaf-word" id="exploreLeafWord"></div>
+  </div>
+  <div id="exploreBranches">
+    <div class="explore-card yes-card" id="exploreYesCard">
+      <div class="card-label">YES</div>
+      <div class="card-next" id="exploreYesNext"></div>
+      <div class="card-count" id="exploreYesCount"></div>
+      <div class="card-leaf" id="exploreYesLeaf"></div>
+    </div>
+    <div class="explore-card no-card" id="exploreNoCard">
+      <div class="card-label">NO</div>
+      <div class="card-next" id="exploreNoNext"></div>
+      <div class="card-count" id="exploreNoCount"></div>
+      <div class="card-leaf" id="exploreNoLeaf"></div>
+    </div>
+  </div>
+  <div id="exploreWordList">
+    <div class="explore-words-header" id="exploreWordsHeader"></div>
+    <div class="explore-words-grid" id="exploreWordsGrid"></div>
+  </div>
+</div>
 
-        const state = {
-            word: '',
-            hint: '',
-            guessed: new Set(),
-            wrongCount: 0,
-            wins: 0,
-            losses: 0,
-            gameOver: false,
-        };
+<div id="helpOverlay">
+  <div class="content">
+    <b>Quick Start</b><br><br>
+    • Have them think of an everyday object they're holding<br>
+    • Tap Hangman to start<br>
+    • Begin with E — ask if it's in their word<br><br>
+    • If no → draw a hangman part<br>
+    • If yes → write it below the gallows<br><br>
+    • Location of each input advances anagram accordingly<br>
+    • SOLVE = peek next letter (visible only while finger is on screen)<br>
+    • Undo = remove last stroke<br><br>
+    • Keep going until the word appears<br>
+    • Tap SOLVE to reveal, Hangman to reset<br>
+    • Double-tap top-right for Settings<br><br>
+    Tip: I emphasize that, unlike normal hangman, I don't know the word length, letter positions, or repeats.
+  </div>
+  <button id="closeHelp">Done</button>
+</div>
 
-        const wordDisplay  = document.getElementById('word-display');
-        const wrongList    = document.getElementById('wrong-list');
-        const hintEl       = document.getElementById('hint');
-        const keyboard     = document.getElementById('keyboard');
-        const overlay      = document.getElementById('message-overlay');
-        const messageTitle = document.getElementById('message-title');
-        const messageWord  = document.getElementById('message-word');
-        const playAgainBtn = document.getElementById('play-again-btn');
-        const winsEl       = document.getElementById('wins');
-        const lossesEl     = document.getElementById('losses');
+<script>
+const DEFAULT_LIST=["AIRFRESHENER","AIRPODS","BACKPACK","BASKET","BATHTUB","BATTERY","BED","BENCH","BLANKET","BLENDER","BOOK","BOOKEND","BOTTLE","BOWL","BRACELET","BROOM","BRUSH","BUCKET","CABINET","CALENDAR","CAMERA","CANDLE","CARDS","CARPET","CHAIR","CHARGER","CLOCK","COASTER","COMB","COMPUTER","COUCH","DESK","DOORKNOB","DRAWER","DRESSER","DUSTPAN","ENVELOPE","FRIDGE","GLASS","GLASSES","GLUE","GRATER","GUITAR","HAIRBRUSH","HAIRDRYER","HAIRTIE","HAMMER","HANGER","HEADPHONES","HEATER","HIGHLIGHTER","IRON","KETTLE","KEYBOARD","KEYS","KNIFE","LADLE","LAMP","LIGHTBULB","LIGHTER","LIPBALM","LOTION","MAGAZINE","MARKER","MATCHES","MATTRESS","MIRROR","MOP","MOUSE","MUG","NAILCLIPPERS","NAPKIN","NECKLACE","NOTEBOOK","PAN","PANTRY","PEELER","PEN","PENCIL","PERFUME","PHONE","PICTURE","PILLOW","PLANT","PLATE","PLUNGER","PRINTER","RAZOR","REMOTE","RING","ROPE","SCALE","SCISSORS","SCREWDRIVER","SHAMPOO","SHARPIE","SINK","SOAP","SPEAKER","SPATULA","SPONGE","SPOON","TABLE","TELEVISION","TISSUES","TOASTER","TOILET","TOILETPAPER","TOOLBOX","TOOTHBRUSH","TOOTHPASTE","TOWEL","TRASHCAN","TUPPERWARE","TWEEZERS","UMBRELLA","VACUUM","WALLET","WASHCLOTH","WHISK","WRENCH"]
+const CAR_BRANDS=["TOYOTA","HONDA","FORD","CHEVROLET","NISSAN","BMW","MERCEDES","AUDI","VOLKSWAGEN","HYUNDAI","KIA","SUBARU","MAZDA","TESLA","LEXUS","ACURA","INFINITI","VOLVO","JAGUAR","LANDROVER","PORSCHE","FERRARI","LAMBORGHINI","MASERATI","ALFAROMEO","FIAT","PEUGEOT","RENAULT","CITROEN","SKODA","SEAT","MINI","BENTLEY","ROLLSROYCE","ASTONMARTIN","BUGATTI","MCLAREN","GENESIS","RAM","DODGE","JEEP","CADILLAC","LINCOLN","BUICK","CHRYSLER","MITSUBISHI","SUZUKI","DAIHATSU","GEELY","TATA"]
 
-        function pickWord() {
-            return WORDS[Math.floor(Math.random() * WORDS.length)];
-        }
+let lists=JSON.parse(localStorage.getItem("hangmanLists")||"{}")
+if(!lists.default)lists.default=DEFAULT_LIST
+if(!lists.cars)lists.cars=CAR_BRANDS
 
-        function initGame() {
-            const entry = pickWord();
-            state.word       = entry.word.toLowerCase();
-            state.hint       = entry.hint;
-            state.guessed    = new Set();
-            state.wrongCount = 0;
-            state.gameOver   = false;
+let currentListName=localStorage.getItem("hangmanActiveList")||"default"
 
-            overlay.classList.add('hidden');
-            renderGallows();
-            renderWord();
-            renderWrong();
-            renderKeyboard();
-            hintEl.textContent = `Hint: ${state.hint}`;
-            updateScore();
-        }
+function getWords(){return lists[currentListName]}
 
-        function renderGallows() {
-            BODY_PART_IDS.forEach((id, i) => {
-                const el = document.getElementById(id);
-                el.classList.toggle('hidden', i >= state.wrongCount);
-            });
-        }
+const hasL=(w,ch)=>w.includes(ch)
 
-        function renderWord() {
-            wordDisplay.innerHTML = '';
-            for (const ch of state.word) {
-                const slot = document.createElement('div');
-                if (ch === ' ') {
-                    slot.className = 'letter-slot space';
-                } else {
-                    slot.className = 'letter-slot';
-                    if (state.guessed.has(ch)) {
-                        slot.textContent = ch;
-                        slot.classList.add('revealed');
-                    }
-                }
-                wordDisplay.appendChild(slot);
-            }
-        }
+function bestSplit(c){
+  const counts={}
+  for(const w of c){for(const ch of new Set(w)){counts[ch]=(counts[ch]||0)+1}}
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1])
+  for(const [ch,cnt] of sorted){
+    if(cnt===0||cnt===c.length)continue
+    const yes=c.filter(w=>hasL(w,ch))
+    const no=c.filter(w=>!hasL(w,ch))
+    if(yes.length&&no.length)return{ch,yes,no}
+  }
+  return null
+}
 
-        function renderWrong() {
-            const wrong = [...state.guessed].filter(ch => !state.word.includes(ch));
-            wrongList.textContent = wrong.join(' ') || '';
-        }
+function buildTree(c){
+  if(c.length<=1)return{leaf:true,word:c[0]||null}
+  const s=bestSplit(c)
+  if(!s)return{leaf:true,word:c[0]}
+  return{leaf:false,ch:s.ch,yesNode:buildTree(s.yes),noNode:buildTree(s.no)}
+}
 
-        function renderKeyboard() {
-            keyboard.innerHTML = '';
-            for (let i = 0; i < 26; i++) {
-                const ch = String.fromCharCode(97 + i);
-                const btn = document.createElement('button');
-                btn.className = 'key';
-                btn.textContent = ch;
-                btn.setAttribute('aria-label', `Guess letter ${ch}`);
-                btn.dataset.letter = ch;
+function buildRootFromList(words){
+  const split=bestSplit(words)
+  if(!split)return{leaf:true,word:words[0]}
+  return{leaf:false,ch:split.ch,yesNode:buildTree(split.yes),noNode:buildTree(split.no)}
+}
 
-                if (state.guessed.has(ch)) {
-                    btn.disabled = true;
-                    btn.classList.add(state.word.includes(ch) ? 'correct' : 'wrong');
-                }
+function buildRoot(){return buildRootFromList(getWords())}
+function getFirstLetter(words){const split=bestSplit(words);return split?split.ch:"?"}
 
-                btn.addEventListener('click', () => guess(ch));
-                keyboard.appendChild(btn);
-            }
-        }
+let root=buildRoot()
+let curNode=root
 
-        function updateKeyButton(ch) {
-            const btn = keyboard.querySelector(`[data-letter="${ch}"]`);
-            if (!btn) return;
-            btn.disabled = true;
-            btn.classList.add(state.word.includes(ch) ? 'correct' : 'wrong');
-        }
+const canvas=document.getElementById("drawCanvas")
+const ctx=canvas.getContext("2d")
+const btnHangman=document.getElementById("btnHangman")
+const btnClear=document.getElementById("btnClear")
+const btnUndo=document.getElementById("btnUndo")
+const btnSolve=document.getElementById("btnSolve")
 
-        function guess(ch) {
-            if (state.gameOver || state.guessed.has(ch)) return;
+let DPR=window.devicePixelRatio||1
+let strokes=[]
+let currentStroke=null
+let treeHistory=[]
+let perfMode=false
+let scaffold=false
+let advanceTimer=null
+let strokeGroupStartY=null
+const ADVANCE_DELAY=450
 
-            state.guessed.add(ch);
+function resizeCanvas(){const r=canvas.getBoundingClientRect();canvas.width=r.width*DPR;canvas.height=r.height*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);redraw()}
 
-            if (!state.word.includes(ch)) {
-                state.wrongCount++;
-            }
+function drawScaffold(){
+  if(!scaffold)return
+  const W=canvas.clientWidth
+  const H=canvas.clientHeight
+  ctx.lineWidth=3
+  ctx.beginPath()
+  ctx.moveTo(W*.15,H*.55)
+  ctx.lineTo(W*.45,H*.55)
+  ctx.moveTo(W*.22,H*.55)
+  ctx.lineTo(W*.22,H*.12)
+  ctx.moveTo(W*.22,H*.12)
+  ctx.lineTo(W*.40,H*.12)
+  ctx.moveTo(W*.40,H*.12)
+  ctx.lineTo(W*.40,H*.18)
+  ctx.stroke()
+}
 
-            renderGallows();
-            renderWord();
-            renderWrong();
-            updateKeyButton(ch);
-            checkEndCondition();
-        }
+function redraw(){
+  const w=canvas.clientWidth
+  const h=canvas.clientHeight
+  ctx.clearRect(0,0,w,h)
+  ctx.fillStyle="#f8f4ec"
+  ctx.fillRect(0,0,w,h)
+  ctx.lineCap="round"
+  ctx.lineJoin="round"
+  drawScaffold()
+  for(const s of strokes){
+    ctx.lineWidth=s.lineWidth
+    ctx.beginPath()
+    ctx.moveTo(s.points[0][0],s.points[0][1])
+    for(let i=1;i<s.points.length;i++)ctx.lineTo(s.points[i][0],s.points[i][1])
+    ctx.stroke()
+  }
+}
 
-        function isWordComplete() {
-            return [...state.word].every(ch => ch === ' ' || state.guessed.has(ch));
-        }
+function isYesZone(y){return y>canvas.clientHeight*.65}
 
-        function checkEndCondition() {
-            if (isWordComplete()) {
-                state.wins++;
-                endGame(true);
-            } else if (state.wrongCount >= MAX_WRONG) {
-                state.losses++;
-                endGame(false);
-            }
-        }
+const peek=document.getElementById("peek")
+const perfDot=document.getElementById("perfDot")
 
-        function endGame(won) {
-            state.gameOver = true;
-            updateScore();
+function showPeek(t){
+  if(t&&t.length===1){
+    btnSolve.textContent="Solv"+t
+  }else{
+    peek.textContent=t
+    peek.classList.add("show")
+  }
+}
 
-            messageTitle.textContent = won ? '🎉 You Won!' : '💀 Game Over';
-            messageTitle.style.color = won ? 'var(--correct)' : 'var(--wrong)';
-            messageWord.innerHTML = `The word was: <span>${state.word}</span>`;
-            overlay.classList.remove('hidden');
-            playAgainBtn.focus();
-        }
+function hidePeek(){
+  peek.classList.remove("show")
+  btnSolve.textContent="Solve"
+}
 
-        function updateScore() {
-            winsEl.textContent   = state.wins;
-            lossesEl.textContent = state.losses;
-        }
+function advanceTree(isYes){if(!curNode||curNode.leaf)return;treeHistory.push(curNode);curNode=isYes?curNode.yesNode:curNode.noNode}
 
-        document.addEventListener('keydown', (e) => {
-            if (state.gameOver) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    initGame();
-                }
-                return;
-            }
-            const ch = e.key.toLowerCase();
-            if (/^[a-z]$/.test(ch)) {
-                guess(ch);
-            }
-        });
+function newSession(){strokes=[];treeHistory=[];root=buildRoot();curNode=root;perfMode=true;scaffold=true;perfDot.classList.add("show");redraw()}
 
-        playAgainBtn.addEventListener('click', initGame);
+function clearAll(){strokes=[];treeHistory=[];perfMode=false;scaffold=false;perfDot.classList.remove("show");redraw()}
 
-        initGame();
-    </script>
+function getPos(e){const r=canvas.getBoundingClientRect();const src=e.touches?e.touches[0]:e;return[src.clientX-r.left,src.clientY-r.top]}
+
+let isDrawing=false
+
+function scheduleAdvance(){
+  clearTimeout(advanceTimer)
+  advanceTimer=setTimeout(()=>{
+    if(perfMode&&strokeGroupStartY!==null&&!curNode.leaf){advanceTree(isYesZone(strokeGroupStartY))}
+    strokeGroupStartY=null
+  },ADVANCE_DELAY)
+}
+
+function onStart(e){
+  e.preventDefault()
+  clearTimeout(advanceTimer)
+  const[x,y]=getPos(e)
+  if(strokeGroupStartY===null)strokeGroupStartY=y
+  isDrawing=true
+  if(perfMode){
+    if(curNode.leaf)showPeek(curNode.word)
+    else{
+      const nextNode=isYesZone(strokeGroupStartY)?curNode.yesNode:curNode.noNode
+      if(nextNode){
+        if(nextNode.leaf)showPeek(nextNode.word)
+        else showPeek(nextNode.ch)
+      }
+    }
+  }
+  currentStroke={points:[[x,y]],lineWidth:4}
+  ctx.lineWidth=4
+  ctx.beginPath()
+  ctx.moveTo(x,y)
+}
+
+function onMove(e){
+  if(!isDrawing)return
+  const[x,y]=getPos(e)
+  currentStroke.points.push([x,y])
+  ctx.lineTo(x,y)
+  ctx.stroke()
+}
+
+function onEnd(){
+  hidePeek()
+  if(!isDrawing)return
+  isDrawing=false
+  strokes.push(currentStroke)
+  scheduleAdvance()
+}
+
+canvas.addEventListener("touchstart",onStart,{passive:false})
+canvas.addEventListener("touchmove",onMove,{passive:false})
+canvas.addEventListener("touchend",onEnd,{passive:false})
+canvas.addEventListener("mousedown",onStart)
+canvas.addEventListener("mousemove",e=>{if(isDrawing)onMove(e)})
+canvas.addEventListener("mouseup",onEnd)
+window.addEventListener("resize",resizeCanvas)
+resizeCanvas()
+
+btnHangman.onclick=newSession
+btnClear.onclick=clearAll
+btnUndo.onclick=()=>{strokes.pop();if(treeHistory.length)curNode=treeHistory.pop();redraw()}
+
+btnSolve.onclick=()=>{
+  perfMode=false
+  hidePeek()
+  perfDot.classList.remove("show")
+  const cutoff=canvas.clientHeight*0.55
+  strokes=strokes.filter(s=>{
+    return s.points.some(p=>p[1]<=cutoff)
+  })
+  redraw()
+}
+
+let lastTap=0
+canvas.addEventListener("pointerdown",e=>{
+  if(e.clientX>window.innerWidth*.75&&e.clientY<window.innerHeight*.25){
+    const now=Date.now()
+    if(now-lastTap<300)openSettings()
+    lastTap=now
+  }
+})
+
+function openSettings(){document.getElementById("settingsPanel").style.display="flex";refreshSettings()}
+function closeSettings(){document.getElementById("settingsPanel").style.display="none"}
+document.getElementById("closeSettings").onclick=closeSettings
+
+function refreshSettings(){
+  // Sync explore mode toggle
+  document.getElementById("exploreModeToggle").checked=isExploreModeEnabled()
+  const sel=document.getElementById("listSelect")
+  sel.innerHTML=""
+  for(const k in lists){const o=document.createElement("option");o.value=k;o.textContent=k;sel.appendChild(o)}
+  sel.value=currentListName
+  renderWords()
+  renderDepthStats()
+  renderFirstLetter()
+}
+
+function renderWords(){
+  const container=document.getElementById("wordView")
+  container.innerHTML=""
+  const words=lists[currentListName].slice().sort()
+  words.forEach(w=>{
+    const row=document.createElement("div")
+    row.style.cssText="display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid #eee"
+    const label=document.createElement("span")
+    label.textContent=w
+    const btn=document.createElement("button")
+    btn.textContent="×"
+    btn.style.cssText="background:none;border:none;color:#c00;font-size:16px;font-weight:700;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0"
+    btn.onclick=()=>{
+      lists[currentListName]=lists[currentListName].filter(x=>x!==w)
+      localStorage.setItem("hangmanLists",JSON.stringify(lists))
+      root=buildRoot()
+      curNode=root
+      refreshSettings()
+    }
+    row.appendChild(label)
+    row.appendChild(btn)
+    container.appendChild(row)
+  })
+}
+
+function renderFirstLetter(){const letter=getFirstLetter(lists[currentListName]);document.getElementById("firstLetter").textContent="First Letter: "+letter}
+
+function depthCount(node,depth,counts){if(!node)return;if(node.leaf){counts[depth]=(counts[depth]||0)+1;return}depthCount(node.yesNode,depth+1,counts);depthCount(node.noNode,depth+1,counts)}
+
+function renderDepthStats(){
+  const counts={}
+  const r=buildRoot()
+  depthCount(r,0,counts)
+  let html=""
+  const depths=Object.keys(counts).sort((a,b)=>a-b)
+  for(const d of depths){html+="Depth "+d+": "+counts[d]+" words<br>"}
+  document.getElementById("depthStats").innerHTML=html
+}
+
+useList.onclick=()=>{
+  currentListName=listSelect.value
+  localStorage.setItem("hangmanActiveList",currentListName)
+  root=buildRoot()
+  curNode=root
+  refreshSettings()
+}
+
+addWordInput.addEventListener("keydown",e=>{
+  if(e.key!="Enter")return
+  const w=e.target.value.trim().toUpperCase()
+  if(!w)return
+  if(!lists[currentListName].includes(w))lists[currentListName].push(w)
+  localStorage.setItem("hangmanLists",JSON.stringify(lists))
+  root=buildRoot()
+  curNode=root
+  strokes=[]
+  treeHistory=[]
+  redraw()
+  e.target.value=""
+  refreshSettings()
+})
+
+createListBtn.onclick=()=>{
+  const name=document.getElementById("newListName").value.trim()
+  const raw=document.getElementById("newListWords").value
+  if(!name||!raw)return
+  const words=raw.split("\n").map(w=>w.trim().toUpperCase()).filter(w=>w.length>0)
+  if(words.length===0)return
+  lists[name]=Array.from(new Set(words))
+  localStorage.setItem("hangmanLists",JSON.stringify(lists))
+  document.getElementById("newListName").value=""
+  document.getElementById("newListWords").value=""
+  refreshSettings()
+}
+
+// ── Explore List Mode ──────────────────────────────────────────────
+
+let exploreHistory=[]
+let exploreNode=null
+let exploreWords=[]
+
+const EXPLORE_ON="1"
+function isExploreModeEnabled(){return localStorage.getItem("exploreMode")===EXPLORE_ON}
+
+function pluralWords(n){return n+" word"+(n!==1?"s":"")}
+function syncExploreButton(){
+  document.getElementById("btnExplore").style.display=isExploreModeEnabled()?"":"none"
+}
+
+const exploreModeToggle=document.getElementById("exploreModeToggle")
+exploreModeToggle.checked=isExploreModeEnabled()
+exploreModeToggle.addEventListener("change",()=>{
+  localStorage.setItem("exploreMode",exploreModeToggle.checked?EXPLORE_ON:"0")
+  syncExploreButton()
+})
+syncExploreButton()
+
+function openExplore(){
+  exploreHistory=[]
+  exploreNode=root
+  exploreWords=getWords().slice()
+  renderExplore()
+  document.getElementById("explorePanel").style.display="flex"
+}
+
+function closeExplore(){
+  document.getElementById("explorePanel").style.display="none"
+}
+
+function renderExplore(){
+  const node=exploreNode
+  const words=exploreWords
+
+  // Breadcrumb path
+  const pathEl=document.getElementById("explorePath")
+  if(exploreHistory.length===0){
+    pathEl.textContent=""
+  } else {
+    pathEl.innerHTML=exploreHistory.map(h=>`<span class="path-item ${h.yes?'yes':'no'}">${h.ch}${h.yes?'✓':'✗'}</span>`).join('<span class="path-sep">→</span>')
+  }
+
+  const questionEl=document.getElementById("exploreQuestion")
+  const branchesEl=document.getElementById("exploreBranches")
+  const leafCard=document.getElementById("exploreLeafCard")
+
+  if(node.leaf){
+    questionEl.style.display="none"
+    branchesEl.style.display="none"
+    leafCard.style.display="block"
+    document.getElementById("exploreLeafWord").textContent=node.word||"(none)"
+  } else {
+    leafCard.style.display="none"
+    questionEl.style.display="block"
+    questionEl.textContent='Contains “'+node.ch+'”?'
+    branchesEl.style.display="flex"
+
+    const yesWords=words.filter(w=>w.includes(node.ch))
+    const noWords=words.filter(w=>!w.includes(node.ch))
+
+    // YES card
+    document.getElementById("exploreYesCount").textContent=pluralWords(yesWords.length)
+    if(node.yesNode.leaf){
+      document.getElementById("exploreYesNext").textContent=""
+      document.getElementById("exploreYesLeaf").textContent=node.yesNode.word||"(none)"
+    } else {
+      document.getElementById("exploreYesNext").textContent="→ "+node.yesNode.ch+"?"
+      document.getElementById("exploreYesLeaf").textContent=""
+    }
+
+    // NO card
+    document.getElementById("exploreNoCount").textContent=pluralWords(noWords.length)
+    if(node.noNode.leaf){
+      document.getElementById("exploreNoNext").textContent=""
+      document.getElementById("exploreNoLeaf").textContent=node.noNode.word||"(none)"
+    } else {
+      document.getElementById("exploreNoNext").textContent="→ "+node.noNode.ch+"?"
+      document.getElementById("exploreNoLeaf").textContent=""
+    }
+  }
+
+  // Word list
+  const header=document.getElementById("exploreWordsHeader")
+  const grid=document.getElementById("exploreWordsGrid")
+  header.textContent=pluralWords(words.length)+" remaining"
+  grid.innerHTML=words.slice().sort().map(w=>`<span class="explore-word">${w}</span>`).join("")
+}
+
+document.getElementById("btnExplore").onclick=openExplore
+document.getElementById("exploreClose").onclick=closeExplore
+
+document.getElementById("exploreBack").onclick=()=>{
+  if(exploreHistory.length===0){closeExplore();return}
+  exploreHistory.pop()
+  // Replay from root
+  exploreNode=root
+  exploreWords=getWords().slice()
+  for(const h of exploreHistory){
+    if(h.yes){
+      exploreWords=exploreWords.filter(w=>w.includes(exploreNode.ch))
+      exploreNode=exploreNode.yesNode
+    } else {
+      exploreWords=exploreWords.filter(w=>!w.includes(exploreNode.ch))
+      exploreNode=exploreNode.noNode
+    }
+  }
+  renderExplore()
+}
+
+document.getElementById("exploreYesCard").onclick=()=>{
+  if(!exploreNode||exploreNode.leaf)return
+  exploreHistory.push({ch:exploreNode.ch,yes:true})
+  exploreWords=exploreWords.filter(w=>w.includes(exploreNode.ch))
+  exploreNode=exploreNode.yesNode
+  renderExplore()
+}
+
+document.getElementById("exploreNoCard").onclick=()=>{
+  if(!exploreNode||exploreNode.leaf)return
+  exploreHistory.push({ch:exploreNode.ch,yes:false})
+  exploreWords=exploreWords.filter(w=>!w.includes(exploreNode.ch))
+  exploreNode=exploreNode.noNode
+  renderExplore()
+}
+</script><script>
+const helpOverlay=document.getElementById('helpOverlay')
+let helpTap=0
+canvas.addEventListener('pointerdown',e=>{
+  if(e.clientX<window.innerWidth*.25&&e.clientY<window.innerHeight*.25){
+    const now=Date.now()
+    if(now-helpTap<300){helpOverlay.style.display='block'}
+    helpTap=now
+  }
+})
+document.getElementById('closeHelp').onclick=()=>helpOverlay.style.display='none'
+</script>
+
 </body>
 </html>
