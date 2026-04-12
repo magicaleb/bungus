@@ -10,7 +10,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
 
-:root{–bg:#f4efe6;–paper:#f8f4ec;–ink:#1a1814;–faint:#cfc6b6;–toolbar:#ece6dc}
+:root{--bg:#f4efe6;--paper:#f8f4ec;--ink:#1a1814;--faint:#cfc6b6;--toolbar:#ece6dc}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 
@@ -18,15 +18,15 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:‘Caveat’,cursiv
 
 #frame{position:fixed;inset:0;background:#e9e3d7}
 
-#app{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));bottom:20px;left:max(10px,env(safe-area-inset-left));display:flex;flex-direction:column;background:var(–bg);border-radius:10px;border:2px solid rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
+#app{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));bottom:20px;left:max(10px,env(safe-area-inset-left));display:flex;flex-direction:column;background:var(--bg);border-radius:10px;border:2px solid rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
 
-#drawCanvas{flex:1;width:100%;display:block;cursor:crosshair;touch-action:none;background:linear-gradient(var(–paper),var(–paper))}
+#drawCanvas{flex:1;width:100%;display:block;cursor:crosshair;touch-action:none;background:linear-gradient(var(--paper),var(--paper))}
 
-#toolbar{background:linear-gradient(var(–toolbar),#e6dfd3);border-top:1px solid var(–faint);display:flex;align-items:center;justify-content:space-around;padding:10px 8px max(10px,env(safe-area-inset-bottom)) 8px;flex-shrink:0}
+#toolbar{background:linear-gradient(var(--toolbar),#e6dfd3);border-top:1px solid var(--faint);display:flex;align-items:center;justify-content:space-around;padding:10px 8px max(10px,env(safe-area-inset-bottom)) 8px;flex-shrink:0}
 
-.tool-btn{font-family:‘Space Mono’,monospace;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#f7f2e8;border:1px solid var(–faint);border-radius:10px;padding:7px 13px;color:#6f6a61;cursor:pointer}
+.tool-btn{font-family:‘Space Mono’,monospace;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#f7f2e8;border:1px solid var(--faint);border-radius:10px;padding:7px 13px;color:#6f6a61;cursor:pointer}
 
-.tool-btn.active{background:var(–ink);color:#1a1814;border-color:var(–ink)}
+.tool-btn.active{background:var(--ink);color:#1a1814;border-color:var(--ink)}
 
 #peek{position:absolute;bottom:0;right:2px;font-family:‘Space Mono’,monospace;font-size:10px;font-weight:700;letter-spacing:.04em;opacity:0;pointer-events:none;color:#666}
 
@@ -182,6 +182,59 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:‘Caveat’,cursiv
     </label>
     <div style="font-family:'Space Mono',monospace;font-size:10px;color:#999;margin-top:6px">Adds an Explore button to the toolbar for visual tree navigation.</div>
   </div>
+</div>
+
+
+
+<div id="explorePanel">
+  <div id="exploreHeader">
+    <button class="tool-btn" id="exploreBack">← Back</button>
+    <div id="exploreTitle">Explore List</div>
+    <button class="tool-btn" id="exploreClose">Close</button>
+  </div>
+  <div id="explorePath"></div>
+  <div id="exploreQuestion"></div>
+  <div id="exploreLeafCard">
+    <div class="leaf-label">WORD</div>
+    <div class="leaf-word" id="exploreLeafWord"></div>
+  </div>
+  <div id="exploreBranches">
+    <div class="explore-card yes-card" id="exploreYesCard">
+      <div class="card-label">YES</div>
+      <div class="card-next" id="exploreYesNext"></div>
+      <div class="card-count" id="exploreYesCount"></div>
+      <div class="card-leaf" id="exploreYesLeaf"></div>
+    </div>
+    <div class="explore-card no-card" id="exploreNoCard">
+      <div class="card-label">NO</div>
+      <div class="card-next" id="exploreNoNext"></div>
+      <div class="card-count" id="exploreNoCount"></div>
+      <div class="card-leaf" id="exploreNoLeaf"></div>
+    </div>
+  </div>
+  <div id="exploreWordList">
+    <div class="explore-words-header" id="exploreWordsHeader"></div>
+    <div class="explore-words-grid" id="exploreWordsGrid"></div>
+  </div>
+</div>
+
+<div id="helpOverlay">
+  <div class="content">
+    <b>Quick Start</b><br><br>
+    • Have them think of an everyday object they're holding<br>
+    • Tap Hangman to start<br>
+    • Begin with E — ask if it's in their word<br><br>
+    • If no → draw a hangman part<br>
+    • If yes → write it below the gallows<br><br>
+    • Location of each input advances anagram accordingly<br>
+    • SOLVE = peek next letter (visible only while finger is on screen)<br>
+    • Undo = remove last stroke<br><br>
+    • Keep going until the word appears<br>
+    • Tap SOLVE to reveal, Hangman to reset<br>
+    • Double-tap top-right for Settings<br><br>
+    Tip: I emphasize that, unlike normal hangman, I don't know the word length, letter positions, or repeats.
+  </div>
+  <button id="closeHelp">Done</button>
 </div>
 
 <script>
@@ -611,60 +664,7 @@ document.getElementById("exploreNoCard").onclick=()=>{
   exploreNode=exploreNode.noNode
   renderExplore()
 }
-</script>
-
-<div id="explorePanel">
-  <div id="exploreHeader">
-    <button class="tool-btn" id="exploreBack">← Back</button>
-    <div id="exploreTitle">Explore List</div>
-    <button class="tool-btn" id="exploreClose">Close</button>
-  </div>
-  <div id="explorePath"></div>
-  <div id="exploreQuestion"></div>
-  <div id="exploreLeafCard">
-    <div class="leaf-label">WORD</div>
-    <div class="leaf-word" id="exploreLeafWord"></div>
-  </div>
-  <div id="exploreBranches">
-    <div class="explore-card yes-card" id="exploreYesCard">
-      <div class="card-label">YES</div>
-      <div class="card-next" id="exploreYesNext"></div>
-      <div class="card-count" id="exploreYesCount"></div>
-      <div class="card-leaf" id="exploreYesLeaf"></div>
-    </div>
-    <div class="explore-card no-card" id="exploreNoCard">
-      <div class="card-label">NO</div>
-      <div class="card-next" id="exploreNoNext"></div>
-      <div class="card-count" id="exploreNoCount"></div>
-      <div class="card-leaf" id="exploreNoLeaf"></div>
-    </div>
-  </div>
-  <div id="exploreWordList">
-    <div class="explore-words-header" id="exploreWordsHeader"></div>
-    <div class="explore-words-grid" id="exploreWordsGrid"></div>
-  </div>
-</div>
-
-<div id="helpOverlay">
-  <div class="content">
-    <b>Quick Start</b><br><br>
-    • Have them think of an everyday object they're holding<br>
-    • Tap Hangman to start<br>
-    • Begin with E — ask if it's in their word<br><br>
-    • If no → draw a hangman part<br>
-    • If yes → write it below the gallows<br><br>
-    • Location of each input advances anagram accordingly<br>
-    • SOLVE = peek next letter (visible only while finger is on screen)<br>
-    • Undo = remove last stroke<br><br>
-    • Keep going until the word appears<br>
-    • Tap SOLVE to reveal, Hangman to reset<br>
-    • Double-tap top-right for Settings<br><br>
-    Tip: I emphasize that, unlike normal hangman, I don't know the word length, letter positions, or repeats.
-  </div>
-  <button id="closeHelp">Done</button>
-</div>
-
-<script>
+</script><script>
 const helpOverlay=document.getElementById('helpOverlay')
 let helpTap=0
 canvas.addEventListener('pointerdown',e=>{
