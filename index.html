@@ -1,12 +1,125 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=hangman.HTML">
-<link rel="canonical" href="hangman.HTML">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Hangman</title>
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<a href="hangman.HTML">Click here if not redirected</a>
+<div id="frame">
+  <div id="app">
+    <canvas id="drawCanvas"></canvas>
+    <div id="toolbar">
+      <button class="tool-btn active" id="btnDraw">Draw</button>
+      <button class="tool-btn" id="btnErase">Erase</button>
+      <button class="tool-btn" id="btnUndo">Undo</button>
+      <button class="tool-btn" id="btnClear">Clear</button>
+      <button class="tool-btn" id="btnHangman">Hangman</button>
+      <button class="tool-btn" id="btnSolve">Solve</button>
+      <button class="tool-btn" id="btnExplore" style="display:none">Explore</button>
+    </div>
+    <div id="peek"></div>
+    <div id="perfDot">.</div>
+  </div>
+</div>
+
+<div id="settingsPanel">
+  <div id="settingsHeader">
+    <div><h1>Settings</h1><div style="font-family:'Space Mono',monospace;font-size:10px;color:#999;margin-top:2px">V1.2.0 · Apr 10, 2026</div></div>
+    <button id="closeSettings">Close</button>
+  </div>
+  <div class="section">
+    <h2>Active Word List</h2>
+    <select id="listSelect"></select>
+    <button id="useList">Use Selected</button>
+    <div id="firstLetter"></div>
+  </div>
+  <div class="section">
+    <h2>Create New List</h2>
+    <input id="newListName" placeholder="LIST NAME"/>
+    <textarea id="newListWords" placeholder="PASTE WORDS (ONE PER LINE)"></textarea>
+    <button id="createListBtn">Create List</button>
+  </div>
+  <div class="section">
+    <h2>Add Word To Current List</h2>
+    <input id="addWordInput" placeholder="TYPE WORD AND PRESS ENTER"/>
+  </div>
+  <div class="section">
+    <h2>Words</h2>
+    <div id="wordView"></div>
+  </div>
+  <div class="section">
+    <h2>Decision Depth</h2>
+    <div id="depthStats"></div>
+  </div>
+  <div class="section">
+    <h2>Explore Mode</h2>
+    <label style="font-family:'Space Mono',monospace;font-size:12px;display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="exploreModeToggle" style="width:16px;height:16px;cursor:pointer">
+      Enable Explore List Mode
+    </label>
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#999;margin-top:6px">Adds an Explore button to the toolbar for visual tree navigation.</div>
+  </div>
+</div>
+
+
+
+<div id="explorePanel">
+  <div id="exploreHeader">
+    <button class="tool-btn" id="exploreBack">← Back</button>
+    <div id="exploreTitle">Explore List</div>
+    <button class="tool-btn" id="exploreClose">Close</button>
+  </div>
+  <div id="explorePath"></div>
+  <div id="exploreQuestion"></div>
+  <div id="exploreLeafCard">
+    <div class="leaf-label">WORD</div>
+    <div class="leaf-word" id="exploreLeafWord"></div>
+  </div>
+  <div id="exploreBranches">
+    <div class="explore-card yes-card" id="exploreYesCard">
+      <div class="card-label">YES</div>
+      <div class="card-next" id="exploreYesNext"></div>
+      <div class="card-count" id="exploreYesCount"></div>
+      <div class="card-leaf" id="exploreYesLeaf"></div>
+    </div>
+    <div class="explore-card no-card" id="exploreNoCard">
+      <div class="card-label">NO</div>
+      <div class="card-next" id="exploreNoNext"></div>
+      <div class="card-count" id="exploreNoCount"></div>
+      <div class="card-leaf" id="exploreNoLeaf"></div>
+    </div>
+  </div>
+  <div id="exploreWordList">
+    <div class="explore-words-header" id="exploreWordsHeader"></div>
+    <div class="explore-words-grid" id="exploreWordsGrid"></div>
+  </div>
+</div>
+
+<div id="helpOverlay">
+  <div class="content">
+    <b>Quick Start</b><br><br>
+    • Have them think of an everyday object they're holding<br>
+    • Tap Hangman to start<br>
+    • Begin with E — ask if it's in their word<br><br>
+    • If no → draw a hangman part<br>
+    • If yes → write it below the gallows<br><br>
+    • Location of each input advances anagram accordingly<br>
+    • SOLVE = peek next letter (visible only while finger is on screen)<br>
+    • Undo = remove last stroke<br><br>
+    • Keep going until the word appears<br>
+    • Tap SOLVE to reveal, Hangman to reset<br>
+    • Double-tap top-right for Settings<br><br>
+    Tip: I emphasize that, unlike normal hangman, I don't know the word length, letter positions, or repeats.
+  </div>
+  <button id="closeHelp">Done</button>
+</div>
+
+<script src="js/app.js"></script>
+
 </body>
 </html>

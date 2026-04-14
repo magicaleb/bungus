@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root{--bg:#f4efe6;--paper:#f8f4ec;--ink:#1a1814;--faint:#cfc6b6;--toolbar:#ece6dc}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+
+html,body{height:100%;width:100%;overflow:hidden;font-family:'Caveat',cursive;background:#ddd}
+
+#frame{position:fixed;inset:0;background:#e9e3d7}
+
+#app{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));bottom:20px;left:max(10px,env(safe-area-inset-left));display:flex;flex-direction:column;background:var(--bg);border-radius:10px;border:2px solid rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
+
+#drawCanvas{flex:1;width:100%;display:block;cursor:crosshair;touch-action:none;background:linear-gradient(var(--paper),var(--paper))}
+
+#toolbar{background:linear-gradient(var(--toolbar),#e6dfd3);border-top:1px solid var(--faint);display:flex;align-items:center;justify-content:space-around;padding:10px 8px max(10px,env(safe-area-inset-bottom)) 8px;flex-shrink:0}
+
+.tool-btn{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#f7f2e8;border:1px solid var(--faint);border-radius:10px;padding:7px 13px;color:#6f6a61;cursor:pointer}
+
+.tool-btn.active{background:var(--ink);color:#1a1814;border-color:var(--ink)}
+
+#peek{position:absolute;bottom:0;right:2px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;opacity:0;pointer-events:none;color:#666}
+
+#peek.show{opacity:1}
+
+#perfDot{position:absolute;bottom:2px;left:8px;font-family:'Space Mono',monospace;font-size:14px;color:#666;opacity:0}
+
+#perfDot.show{opacity:.9}
+
+#settingsPanel{position:fixed;inset:0;background:#f4efe6;display:none;flex-direction:column;overflow:auto;padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));z-index:500}
+
+#settingsHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+
+#settingsHeader h1{font-family:'Space Mono',monospace;font-size:16px}
+
+#closeSettings{font-family:'Space Mono',monospace;font-size:12px;padding:6px 10px}
+
+.section{margin-bottom:28px}
+
+.section h2{font-family:'Space Mono',monospace;font-size:14px;margin-bottom:8px}
+
+#wordView{font-family:monospace;font-size:12px;background:white;border:1px solid #ccc;padding:8px;max-height:200px;overflow:auto}
+
+#depthStats{font-family:monospace;font-size:12px;margin-top:8px;background:white;border:1px solid #ccc;padding:8px}
+
+#firstLetter{font-family:monospace;font-size:12px;margin-top:6px;background:white;border:1px solid #ccc;padding:6px;display:inline-block}
+
+#addWordInput{width:100%;padding:6px;margin-top:6px;font-family:monospace}
+
+#newListName{width:100%;padding:6px;margin-top:6px;font-family:monospace}
+
+#newListWords{width:100%;height:140px;padding:6px;margin-top:6px;font-family:monospace}
+
+#helpOverlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;z-index:999}
+
+#helpOverlay .line{position:absolute;left:0;right:0;border-top:2px dashed #fff}
+
+#helpOverlay .box{position:absolute;border:2px solid red;border-radius:8px}
+
+#helpOverlay .content{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:90%;max-width:420px;max-height:80vh;overflow:auto;color:#fff;font-family:'Space Mono',monospace;font-size:13px;line-height:1.6;background:rgba(0,0,0,.6);padding:18px;border-radius:14px}
+
+#helpOverlay button{position:absolute;top:16px;right:16px}
+
+/* ── Explore Panel ── */
+#explorePanel{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;overflow:hidden;z-index:600;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+
+#exploreHeader{display:flex;justify-content:space-between;align-items:center;flex-shrink:0;margin-bottom:10px}
+
+#exploreTitle{font-family:'Space Mono',monospace;font-size:14px;font-weight:700}
+
+#explorePath{font-family:'Space Mono',monospace;font-size:11px;color:#888;min-height:18px;overflow-x:auto;white-space:nowrap;flex-shrink:0;margin-bottom:8px;padding-bottom:2px}
+
+.path-item{display:inline-block;padding:1px 5px;border-radius:4px;background:#e6dfd3;margin:0 1px;font-weight:700}
+
+.path-item.yes{background:#c8eac8;color:#2a6b2a}
+
+.path-item.no{background:#f5c8c8;color:#8b1a1a}
+
+.path-sep{color:#bbb;margin:0 2px}
+
+#exploreQuestion{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;text-align:center;padding:14px 8px;background:#fff;border:2px solid var(--faint);border-radius:12px;flex-shrink:0;margin-bottom:10px;letter-spacing:.04em}
+
+#exploreBranches{display:flex;gap:10px;flex-shrink:0;margin-bottom:10px}
+
+.explore-card{flex:1;background:#fff;border:2px solid var(--faint);border-radius:14px;padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:background .15s,border-color .15s;-webkit-tap-highlight-color:transparent;user-select:none}
+
+.explore-card:active{opacity:.75}
+
+.yes-card{border-color:#a0d8a0}
+
+.no-card{border-color:#e8a8a8}
+
+.card-label{font-family:'Space Mono',monospace;font-size:13px;font-weight:700}
+
+.yes-card .card-label{color:#2a6b2a}
+
+.no-card .card-label{color:#8b1a1a}
+
+.card-next{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--ink)}
+
+.card-count{font-family:'Space Mono',monospace;font-size:11px;color:#888}
+
+.card-leaf{font-family:'Space Mono',monospace;font-size:12px;color:#555;text-align:center;word-break:break-all}
+
+#exploreWordList{flex:1;overflow-y:auto;background:#fff;border:1px solid var(--faint);border-radius:10px;padding:8px 10px}
+
+.explore-words-header{font-family:'Space Mono',monospace;font-size:11px;color:#888;margin-bottom:6px}
+
+.explore-words-grid{display:flex;flex-wrap:wrap;gap:4px}
+
+.explore-word{font-family:'Space Mono',monospace;font-size:11px;background:#f0ece3;border-radius:4px;padding:2px 6px;color:var(--ink)}
+
+#exploreLeafCard{background:#fff;border:2px solid #a0d8a0;border-radius:14px;padding:18px;text-align:center;flex-shrink:0;margin-bottom:10px;display:none}
+
+#exploreLeafCard .leaf-label{font-family:'Space Mono',monospace;font-size:11px;color:#888;margin-bottom:4px}
+
+#exploreLeafCard .leaf-word{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:.06em}
