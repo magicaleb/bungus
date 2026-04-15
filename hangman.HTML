@@ -414,7 +414,8 @@ let isDrawing=false
 function scheduleAdvance(){
   clearTimeout(advanceTimer)
   advanceTimer=setTimeout(()=>{
-    if(perfMode&&strokeGroupStartY!==null&&curNode&&!curNode.leaf){advanceTree(isYesZone(strokeGroupStartY))}
+    const canAdvance=perfMode&&strokeGroupStartY!==null&&curNode&&!curNode.leaf
+    if(canAdvance){advanceTree(isYesZone(strokeGroupStartY))}
     strokeGroupStartY=null
   },ADVANCE_DELAY)
 }
