@@ -527,7 +527,7 @@ function renderWords(){
     const btn=document.createElement("button")
     btn.textContent="×"
     btn.className="word-delete-btn"
-    btn.setAttribute("aria-label","Remove "+w)
+    btn.setAttribute("aria-label","Remove word "+w)
     btn.addEventListener("click",()=>{
       lists[currentListName]=lists[currentListName].filter(x=>x!==w)
       safeStorage.setItem("hangmanLists",JSON.stringify(lists))
@@ -740,7 +740,7 @@ canvas.addEventListener('pointerdown',e=>{
     helpTap=now
   }
 })
-document.getElementById('closeHelp').addEventListener("click",()=>{helpOverlay.style.display='none';helpOverlay.setAttribute("aria-hidden","true")})
+document.getElementById("closeHelp").addEventListener("click",()=>{helpOverlay.style.display='none';helpOverlay.setAttribute("aria-hidden","true")})
 </script>
 
 </body>
