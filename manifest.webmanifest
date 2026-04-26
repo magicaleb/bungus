@@ -1,0 +1,11 @@
+{
+  "name": "Hangman",
+  "short_name": "Hangman",
+  "start_url": "hangman.html?v=2026-04-26-1",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4efe6",
+  "theme_color": "#f4efe6",
+  "orientation": "portrait",
+  "icons": []
+}

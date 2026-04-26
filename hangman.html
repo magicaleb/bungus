@@ -6,6 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hangman">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe6">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest?v=2026-04-26-1">
 <title>Hangman</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
@@ -14,11 +19,11 @@
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 
-html,body{height:100%;width:100%;overflow:hidden;font-family:'Caveat',cursive;background:#ddd}
+html,body{height:100%;height:100dvh;width:100%;overflow:hidden;font-family:'Caveat',cursive;background:#ddd}
 
-#frame{position:fixed;inset:0;background:#e9e3d7}
+#frame{position:fixed;inset:0;height:var(--app-height,100dvh);background:#e9e3d7}
 
-#app{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));bottom:20px;left:max(10px,env(safe-area-inset-left));display:flex;flex-direction:column;background:var(--bg);border-radius:10px;border:2px solid rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
+#app{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));left:max(10px,env(safe-area-inset-left));display:flex;flex-direction:column;background:var(--bg);border-radius:10px;border:2px solid rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
 
 #drawCanvas{flex:1;width:100%;display:block;cursor:crosshair;touch-action:none;background:linear-gradient(var(--paper),var(--paper))}
 
@@ -161,7 +166,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'Caveat',cursive;ba
 
 <div id="settingsPanel" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Settings">
   <div id="settingsHeader">
-    <div><h1>Settings</h1><div class="mono-caption mt-2">V1.2.0 · Apr 10, 2026</div></div>
+    <div><h1>Settings</h1><div class="mono-caption mt-2" id="settingsBuildInfo"></div></div>
     <button id="closeSettings">Close</button>
   </div>
   <div class="section">
@@ -252,6 +257,22 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'Caveat',cursive;ba
 </div>
 
 <script>
+const APP_VERSION="1.3.0"
+const APP_BUILD_DATE="Apr 26, 2026"
+const APP_CACHE_TOKEN="2026-04-26-1"
+const isStandalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true
+
+// Normalize launch URL for home-screen installs so stale bookmarked query strings
+// do not lock the app to an old build on iOS standalone mode.
+{
+  const url=new URL(window.location.href)
+  const existingToken=url.searchParams.get("v")
+  if(existingToken!==APP_CACHE_TOKEN){
+    url.searchParams.set("v",APP_CACHE_TOKEN)
+    window.location.replace(url.toString())
+  }
+}
+
 const DEFAULT_LIST=["AIRFRESHENER","AIRPODS","BACKPACK","BASKET","BATHTUB","BATTERY","BED","BENCH","BLANKET","BLENDER","BOOK","BOOKEND","BOTTLE","BOWL","BRACELET","BROOM","BRUSH","BUCKET","CABINET","CALENDAR","CAMERA","CANDLE","CARDS","CARPET","CHAIR","CHARGER","CLOCK","COASTER","COMB","COMPUTER","COUCH","DESK","DOORKNOB","DRAWER","DRESSER","DUSTPAN","ENVELOPE","FRIDGE","GLASS","GLASSES","GLUE","GRATER","GUITAR","HAIRBRUSH","HAIRDRYER","HAIRTIE","HAMMER","HANGER","HEADPHONES","HEATER","HIGHLIGHTER","IRON","KETTLE","KEYBOARD","KEYS","KNIFE","LADLE","LAMP","LIGHTBULB","LIGHTER","LIPBALM","LOTION","MAGAZINE","MARKER","MATCHES","MATTRESS","MIRROR","MOP","MOUSE","MUG","NAILCLIPPERS","NAPKIN","NECKLACE","NOTEBOOK","PAN","PANTRY","PEELER","PEN","PENCIL","PERFUME","PHONE","PICTURE","PILLOW","PLANT","PLATE","PLUNGER","PRINTER","RAZOR","REMOTE","RING","ROPE","SCALE","SCISSORS","SCREWDRIVER","SHAMPOO","SHARPIE","SINK","SOAP","SPEAKER","SPATULA","SPONGE","SPOON","TABLE","TELEVISION","TISSUES","TOASTER","TOILET","TOILETPAPER","TOOLBOX","TOOTHBRUSH","TOOTHPASTE","TOWEL","TRASHCAN","TUPPERWARE","TWEEZERS","UMBRELLA","VACUUM","WALLET","WASHCLOTH","WHISK","WRENCH"]
 const CAR_BRANDS=["TOYOTA","HONDA","FORD","CHEVROLET","NISSAN","BMW","MERCEDES","AUDI","VOLKSWAGEN","HYUNDAI","KIA","SUBARU","MAZDA","TESLA","LEXUS","ACURA","INFINITI","VOLVO","JAGUAR","LANDROVER","PORSCHE","FERRARI","LAMBORGHINI","MASERATI","ALFAROMEO","FIAT","PEUGEOT","RENAULT","CITROEN","SKODA","SEAT","MINI","BENTLEY","ROLLSROYCE","ASTONMARTIN","BUGATTI","MCLAREN","GENESIS","RAM","DODGE","JEEP","CADILLAC","LINCOLN","BUICK","CHRYSLER","MITSUBISHI","SUZUKI","DAIHATSU","GEELY","TATA"]
 
@@ -345,7 +366,20 @@ let advanceTimer=null
 let strokeGroupStartY=null
 const ADVANCE_DELAY=450
 
-function resizeCanvas(){const r=canvas.getBoundingClientRect();canvas.width=r.width*DPR;canvas.height=r.height*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);redraw()}
+function syncViewportVars(){
+  const vv=window.visualViewport
+  const viewportHeight=vv?Math.round(vv.height):window.innerHeight
+  document.documentElement.style.setProperty("--app-height",viewportHeight+"px")
+}
+
+function resizeCanvas(){
+  DPR=window.devicePixelRatio||1
+  const r=canvas.getBoundingClientRect()
+  canvas.width=r.width*DPR
+  canvas.height=r.height*DPR
+  ctx.setTransform(DPR,0,0,DPR,0,0)
+  redraw()
+}
 
 function drawScaffold(){
   if(!scaffold)return
@@ -464,7 +498,14 @@ canvas.addEventListener("touchend",onEnd,{passive:false})
 canvas.addEventListener("mousedown",onStart)
 canvas.addEventListener("mousemove",e=>{if(isDrawing)onMove(e)})
 canvas.addEventListener("mouseup",onEnd)
-window.addEventListener("resize",resizeCanvas)
+window.addEventListener("resize",()=>{syncViewportVars();resizeCanvas()})
+window.addEventListener("orientationchange",()=>{syncViewportVars();resizeCanvas()})
+window.addEventListener("pageshow",()=>{syncViewportVars();resizeCanvas()})
+if(window.visualViewport){
+  window.visualViewport.addEventListener("resize",()=>{syncViewportVars();resizeCanvas()})
+  window.visualViewport.addEventListener("scroll",syncViewportVars)
+}
+syncViewportVars()
 resizeCanvas()
 
 btnHangman.addEventListener("click",newSession)
@@ -484,7 +525,9 @@ btnSolve.addEventListener("click",()=>{
 
 let lastTap=0
 canvas.addEventListener("pointerdown",e=>{
-  if(e.clientX>window.innerWidth*.75&&e.clientY<window.innerHeight*.25){
+  const viewW=document.documentElement.clientWidth
+  const viewH=document.documentElement.clientHeight
+  if(e.clientX>viewW*.75&&e.clientY<viewH*.25){
     const now=Date.now()
     if(now-lastTap<300)openSettings()
     lastTap=now
@@ -502,6 +545,7 @@ function closeSettings(){
   settingsPanel.setAttribute("aria-hidden","true")
 }
 document.getElementById("closeSettings").addEventListener("click",closeSettings)
+document.getElementById("settingsBuildInfo").textContent=`V${APP_VERSION} · ${APP_BUILD_DATE}${isStandalone?" · Standalone":""}`
 
 function refreshSettings(){
   // Sync explore mode toggle
@@ -734,7 +778,9 @@ bindActivatableCard(exploreNoCard,()=>stepExplore(false))
 const helpOverlay=document.getElementById('helpOverlay')
 let helpTap=0
 canvas.addEventListener('pointerdown',e=>{
-  if(e.clientX<window.innerWidth*.25&&e.clientY<window.innerHeight*.25){
+  const viewW=document.documentElement.clientWidth
+  const viewH=document.documentElement.clientHeight
+  if(e.clientX<viewW*.25&&e.clientY<viewH*.25){
     const now=Date.now()
     if(now-helpTap<300){helpOverlay.style.display='block';helpOverlay.setAttribute("aria-hidden","false")}
     helpTap=now
