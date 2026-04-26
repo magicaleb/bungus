@@ -2,11 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=hangman.HTML">
-<link rel="canonical" href="hangman.HTML">
 <title>Hangman</title>
+<script>
+  const APP_VERSION = '2026-04-26';
+  const target = `hangman.html?v=${APP_VERSION}`;
+  if (location.pathname.endsWith('/index.html') || location.pathname.endsWith('/')) {
+    location.replace(target);
+  }
+</script>
+<link rel="canonical" href="hangman.html">
+<meta http-equiv="refresh" content="0; url=hangman.html?v=2026-04-26">
 </head>
 <body>
-<a href="hangman.HTML">Click here if not redirected</a>
+<a href="hangman.html?v=2026-04-26">Click here if not redirected</a>
 </body>
 </html>
