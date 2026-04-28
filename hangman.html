@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f4efe6">
 <meta name="format-detection" content="telephone=no">
-<link rel="manifest" href="manifest.webmanifest?v=2026-04-27-1">
+<link rel="manifest" href="manifest.webmanifest?v=2026-04-28-1">
 <title>Hangman</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
@@ -19,15 +19,35 @@
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 
-html,body{height:100%;height:100dvh;width:100%;overflow:hidden;font-family:'Caveat',cursive;background:#ddd}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Caveat',cursive;background:#ddd}
 
-#frame{position:fixed;inset:0;height:var(--app-height,100dvh);background:#e9e3d7}
+#frame{
+  position:fixed;
+  inset:0;
+  height:100vh;
+  height:100svh;
+  background:#e9e3d7;
+  padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 10px) calc(env(safe-area-inset-bottom) + 10px) calc(env(safe-area-inset-left) + 10px);
+}
 
-#app{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));left:max(10px,env(safe-area-inset-left));display:flex;flex-direction:column;background:var(--bg);border-radius:10px;border:2px solid rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.12);overflow:hidden}
+#app{
+  height:100%;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  background:var(--bg);
+  border-radius:10px;
+  border:2px solid rgba(0,0,0,.35);
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+  overflow:hidden;
+}
 
-#drawCanvas{flex:1;width:100%;display:block;cursor:crosshair;touch-action:none;background:linear-gradient(var(--paper),var(--paper))}
+#canvasWrap{flex:1 1 auto;min-height:0;position:relative}
 
-#toolbar{background:linear-gradient(var(--toolbar),#e6dfd3);border-top:1px solid var(--faint);display:flex;align-items:center;justify-content:space-around;padding:10px 8px max(10px,env(safe-area-inset-bottom)) 8px;flex-shrink:0}
+#drawCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;background:linear-gradient(var(--paper),var(--paper))}
+
+#toolbar{background:linear-gradient(var(--toolbar),#e6dfd3);border-top:1px solid var(--faint);display:flex;align-items:center;justify-content:space-around;padding:10px 8px 10px;flex-shrink:0;min-height:70px}
 
 .tool-btn{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#f7f2e8;border:1px solid var(--faint);border-radius:10px;padding:7px 13px;color:#6f6a61;cursor:pointer}
 
@@ -40,6 +60,10 @@ html,body{height:100%;height:100dvh;width:100%;overflow:hidden;font-family:'Cave
 #perfDot{position:absolute;bottom:2px;left:8px;font-family:'Space Mono',monospace;font-size:14px;color:#666;opacity:0}
 
 #perfDot.show{opacity:.9}
+
+#debugBadge{position:absolute;top:6px;left:6px;z-index:50;font-family:'Space Mono',monospace;font-size:10px;line-height:1.3;color:#222;background:rgba(255,255,255,.9);border:1px solid #bdb4a7;border-radius:8px;padding:4px 6px;display:none;white-space:pre-line}
+
+#debugBadge.show{display:block}
 
 #settingsPanel{position:fixed;inset:0;background:#f4efe6;display:none;flex-direction:column;overflow:auto;padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));z-index:500}
 
@@ -149,7 +173,9 @@ html,body{height:100%;height:100dvh;width:100%;overflow:hidden;font-family:'Cave
 <body>
 <div id="frame">
   <div id="app">
-    <canvas id="drawCanvas" aria-label="Drawing canvas for hangman input"></canvas>
+    <div id="canvasWrap">
+      <canvas id="drawCanvas" aria-label="Drawing canvas for hangman input"></canvas>
+    </div>
     <div id="toolbar" aria-label="Game controls">
       <button class="tool-btn" id="btnDraw">Draw</button>
       <button class="tool-btn" id="btnErase">Erase</button>
@@ -161,6 +187,7 @@ html,body{height:100%;height:100dvh;width:100%;overflow:hidden;font-family:'Cave
     </div>
     <div id="peek"></div>
     <div id="perfDot">.</div>
+    <div id="debugBadge" aria-live="polite"></div>
   </div>
 </div>
 
@@ -200,6 +227,14 @@ html,body{height:100%;height:100dvh;width:100%;overflow:hidden;font-family:'Cave
       Enable Explore List Mode
     </label>
     <div class="mono-caption mt-6">Adds an Explore button to the toolbar for visual tree navigation.</div>
+  </div>
+  <div class="section">
+    <h2>Screenshot Mode</h2>
+    <label class="toggle-label">
+      <input type="checkbox" id="debugBadgeToggle" class="toggle-checkbox">
+      Show build/layout badge
+    </label>
+    <div class="mono-caption mt-6">Use this before taking screenshots so build/version and viewport sizing are visible.</div>
   </div>
 </div>
 
@@ -257,10 +292,12 @@ html,body{height:100%;height:100dvh;width:100%;overflow:hidden;font-family:'Cave
 </div>
 
 <script>
-const APP_VERSION="1.3.1"
-const APP_BUILD_DATE="Apr 27, 2026"
-const APP_CACHE_TOKEN="2026-04-27-1"
+const APP_VERSION="1.3.6"
+const APP_BUILD_DATE="Apr 28, 2026"
+const APP_CACHE_TOKEN="2026-04-28-5"
 const isStandalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true
+const debugBadge=document.getElementById("debugBadge")
+let debugBadgeVisible=false
 
 // Normalize launch URL for home-screen installs so stale bookmarked query strings
 // do not lock the app to an old build on iOS standalone mode.
@@ -295,8 +332,13 @@ const safeStorage=(()=>{
 const STORAGE_KEYS={
   lists:"hangmanLists",
   activeList:"hangmanActiveList",
-  exploreMode:"exploreMode"
+  exploreMode:"exploreMode",
+  debugBadge:"debugBadge"
 }
+
+const urlDebugEnabled=new URL(window.location.href).searchParams.get("debug")==="1"
+debugBadgeVisible=urlDebugEnabled||safeStorage.getItem(STORAGE_KEYS.debugBadge)==="1"
+setTimeout(()=>setDebugBadgeVisible(debugBadgeVisible),0)
 
 function readJSON(key,fallback){
   try{
@@ -388,19 +430,29 @@ let advanceTimer=null
 let strokeGroupStartY=null
 const ADVANCE_DELAY=450
 
-function syncViewportVars(){
-  const vv=window.visualViewport
-  const viewportHeight=vv?Math.round(vv.height):window.innerHeight
-  document.documentElement.style.setProperty("--app-height",viewportHeight+"px")
-}
-
 function resizeCanvas(){
   DPR=window.devicePixelRatio||1
-  const r=canvas.getBoundingClientRect()
+  const r=document.getElementById("canvasWrap").getBoundingClientRect()
   canvas.width=r.width*DPR
   canvas.height=r.height*DPR
   ctx.setTransform(DPR,0,0,DPR,0,0)
   redraw()
+  updateDebugBadge()
+}
+
+function updateDebugBadge(){
+  if(!debugBadgeVisible)return
+  const appRect=document.getElementById("app").getBoundingClientRect()
+  const canvasRect=document.getElementById("canvasWrap").getBoundingClientRect()
+  const toolbarRect=document.getElementById("toolbar").getBoundingClientRect()
+  debugBadge.textContent=`v${APP_VERSION}\napp:${Math.round(appRect.width)}x${Math.round(appRect.height)}\ncanvas:${Math.round(canvasRect.height)}\ntoolbar:${Math.round(toolbarRect.height)}`
+}
+
+function setDebugBadgeVisible(next){
+  debugBadgeVisible=!!next
+  debugBadge.classList.toggle("show",debugBadgeVisible)
+  safeStorage.setItem(STORAGE_KEYS.debugBadge,debugBadgeVisible?"1":"0")
+  updateDebugBadge()
 }
 
 function drawScaffold(){
@@ -520,14 +572,13 @@ canvas.addEventListener("touchend",onEnd,{passive:false})
 canvas.addEventListener("mousedown",onStart)
 canvas.addEventListener("mousemove",e=>{if(isDrawing)onMove(e)})
 canvas.addEventListener("mouseup",onEnd)
-window.addEventListener("resize",()=>{syncViewportVars();resizeCanvas()})
-window.addEventListener("orientationchange",()=>{syncViewportVars();resizeCanvas()})
-window.addEventListener("pageshow",()=>{syncViewportVars();resizeCanvas()})
-if(window.visualViewport){
-  window.visualViewport.addEventListener("resize",()=>{syncViewportVars();resizeCanvas()})
-  window.visualViewport.addEventListener("scroll",syncViewportVars)
+window.addEventListener("resize",resizeCanvas)
+window.addEventListener("orientationchange",resizeCanvas)
+window.addEventListener("pageshow",resizeCanvas)
+if(window.ResizeObserver){
+  const ro=new ResizeObserver(()=>resizeCanvas())
+  ro.observe(document.getElementById("app"))
 }
-syncViewportVars()
 resizeCanvas()
 
 btnHangman.addEventListener("click",newSession)
@@ -572,6 +623,7 @@ document.getElementById("settingsBuildInfo").textContent=`V${APP_VERSION} · ${A
 function refreshSettings(){
   // Sync explore mode toggle
   document.getElementById("exploreModeToggle").checked=isExploreModeEnabled()
+  document.getElementById("debugBadgeToggle").checked=debugBadgeVisible
   const sel=document.getElementById("listSelect")
   sel.innerHTML=""
   for(const k in lists){const o=document.createElement("option");o.value=k;o.textContent=k;sel.appendChild(o)}
@@ -682,6 +734,9 @@ exploreModeToggle.addEventListener("change",()=>{
   safeStorage.setItem(STORAGE_KEYS.exploreMode,exploreModeToggle.checked?EXPLORE_ON:"0")
   syncExploreButton()
 })
+const debugBadgeToggle=document.getElementById("debugBadgeToggle")
+debugBadgeToggle.checked=debugBadgeVisible
+debugBadgeToggle.addEventListener("change",()=>setDebugBadgeVisible(debugBadgeToggle.checked))
 syncExploreButton()
 
 const explorePanel=document.getElementById("explorePanel")
