@@ -17,7 +17,9 @@ const outputPath = process.argv[4] || 'screenshot.png';
     process.exit(1);
   }
 
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({
+    args: ['--no-sandbox', '--disable-dev-shm-usage']
+  });
   const context = await browser.newContext({ ...device });
   const page = await context.newPage();
 
