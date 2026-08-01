@@ -1,0 +1,60 @@
+---
+const reveals = [
+  'A coincidence with excellent timing.',
+  'A tiny miracle wearing ordinary clothes.',
+  'Proof that curiosity still works.',
+  'The exact moment ordinary became memorable.',
+  'Something impossible enough to be fun.'
+];
+---
+
+<section class="machine" aria-labelledby="machine-title">
+  <div class="machine__glow" aria-hidden="true"></div>
+  <p class="eyebrow">Independent experiment 001</p>
+  <h1 id="machine-title">Amaze<span>Wow</span></h1>
+  <p class="intro">A tiny machine for manufacturing a moment of wonder.</p>
+
+  <div class="reveal" id="reveal" aria-live="polite">
+    <span class="reveal__label">Current output</span>
+    <strong id="reveal-text">Press the button. Expect very little.</strong>
+  </div>
+
+  <button class="wow-button" id="wow-button" type="button">
+    <span>Make something happen</span>
+  </button>
+
+  <p class="footnote">No Bungus code was invited to this party.</p>
+</section>
+
+<script define:vars={{ reveals }}>
+  const button = document.querySelector('#wow-button');
+  const reveal = document.querySelector('#reveal');
+  const revealText = document.querySelector('#reveal-text');
+
+  let previousIndex = -1;
+
+  const chooseReveal = () => {
+    if (!(button instanceof HTMLButtonElement)) return;
+    if (!(reveal instanceof HTMLElement)) return;
+    if (!(revealText instanceof HTMLElement)) return;
+
+    let nextIndex = previousIndex;
+    while (nextIndex === previousIndex && reveals.length > 1) {
+      nextIndex = Math.floor(Math.random() * reveals.length);
+    }
+
+    previousIndex = nextIndex;
+    button.disabled = true;
+    reveal.dataset.state = 'thinking';
+    revealText.textContent = 'Calculating wonder…';
+
+    window.setTimeout(() => {
+      revealText.textContent = reveals[nextIndex];
+      reveal.dataset.state = 'revealed';
+      button.disabled = false;
+      button.focus({ preventScroll: true });
+    }, 650);
+  };
+
+  button?.addEventListener('click', chooseReveal);
+</script>
