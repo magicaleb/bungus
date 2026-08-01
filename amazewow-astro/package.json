@@ -1,0 +1,15 @@
+{
+  "name": "amazewow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "publish:pages": "astro build && node scripts/publish-pages.mjs"
+  },
+  "devDependencies": {
+    "astro": "^7.1.0"
+  }
+}
