@@ -1,0 +1,234 @@
+---
+import { catalog } from '../data/catalog';
+---
+
+<div class="app-shell" id="app-shell">
+  <header class="topbar">
+    <button class="wordmark" id="wordmark" type="button" aria-label="AmazeWow home">
+      <span class="wordmark__mark" aria-hidden="true">✦</span>
+      <span>AmazeWow</span>
+    </button>
+    <div class="topbar__status" id="topbar-status">Thought Index</div>
+    <button class="icon-button" id="back-button" type="button" aria-label="Go back" hidden>←</button>
+  </header>
+
+  <main class="stage">
+    <section class="screen screen--center" data-screen="participant-start">
+      <div class="hero-symbol" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="kicker">A private attention experiment</p>
+      <h1>The Thought Index</h1>
+      <p class="lede">Choose one vivid thought from a field of possibilities. Nothing is sent, saved, or shared.</p>
+      <form class="session-form" id="participant-session-form" novalidate>
+        <label for="participant-session">Enter the six-digit session</label>
+        <div class="code-entry">
+          <input id="participant-session" name="session" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" aria-describedby="participant-session-error" />
+          <button class="primary-button" type="submit">Enter index</button>
+        </div>
+        <p class="form-error" id="participant-session-error" role="alert"></p>
+      </form>
+      <div class="privacy-note"><span aria-hidden="true">◌</span><p>Runs entirely inside this browser. No login, camera, microphone, or network pairing.</p></div>
+    </section>
+
+    <section class="screen screen--index" data-screen="participant-index" hidden>
+      <div class="index-intro">
+        <p class="kicker">Session <strong id="participant-session-label"></strong></p>
+        <h2>Find a thought you can picture clearly.</h2>
+        <p>Search, browse, or let one catch your eye. The choice is yours.</p>
+      </div>
+      <div class="search-wrap">
+        <span aria-hidden="true">⌕</span>
+        <input id="thought-search" type="search" placeholder="Search the index" autocomplete="off" />
+        <button id="clear-search" type="button" aria-label="Clear search" hidden>×</button>
+      </div>
+      <div class="category-strip" id="category-strip" aria-label="Thought categories"></div>
+      <div class="index-meta"><span id="result-count"></span><button class="text-button" id="surprise-button" type="button">Choose for me</button></div>
+      <div class="thought-grid" id="thought-grid"></div>
+      <div class="empty-state" id="empty-state" hidden><strong>No match.</strong><span>Try a broader word or another category.</span></div>
+    </section>
+
+    <section class="screen screen--center" data-screen="participant-signal" hidden>
+      <div class="lock-orbit" aria-hidden="true"><span>✦</span></div>
+      <p class="kicker">Thought locked</p>
+      <h2 id="locked-thought">Your thought is held in mind.</h2>
+      <p class="lede lede--small">Say only the resonance number below. Keep the thought itself private.</p>
+      <div class="signal-card">
+        <span class="signal-card__label">Resonance</span><strong id="signal-number">00 000</strong>
+        <div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="button-row">
+        <button class="secondary-button" id="hide-thought-button" type="button">Hide thought</button>
+        <button class="primary-button" id="copy-signal-button" type="button">Copy number</button>
+      </div>
+      <button class="text-button" id="restart-participant" type="button">Start a new thought</button>
+    </section>
+
+    <section class="screen screen--studio" data-screen="performer-studio" hidden>
+      <div class="studio-heading"><div><p class="kicker">Performer console</p><h2>Signal Studio</h2></div><button class="secondary-button secondary-button--small" id="exit-studio" type="button">Exit</button></div>
+      <div class="studio-grid">
+        <article class="studio-card studio-card--session">
+          <div class="card-heading"><div><span class="card-number">01</span><h3>Create a session</h3></div><span class="status-dot">Local</span></div>
+          <p>Give this six-digit number to the participant. It scrambles every resonance differently.</p>
+          <div class="session-display" id="studio-session-display">000000</div>
+          <div class="button-row"><button class="primary-button" id="new-session-button" type="button">New session</button><button class="secondary-button" id="copy-session-button" type="button">Copy</button></div>
+        </article>
+        <article class="studio-card studio-card--decode">
+          <div class="card-heading"><div><span class="card-number">02</span><h3>Read the signal</h3></div></div>
+          <form id="decoder-form" class="decoder-form" novalidate>
+            <label>Session<input id="decoder-session" type="text" inputmode="numeric" maxlength="6" placeholder="000000" /></label>
+            <label>Resonance<input id="decoder-signal" type="text" inputmode="numeric" maxlength="6" placeholder="00 000" /></label>
+            <button class="primary-button" type="submit">Decode thought</button><p class="form-error" id="decoder-error" role="alert"></p>
+          </form>
+        </article>
+        <article class="studio-card studio-card--reveal" id="reveal-card" aria-live="polite">
+          <div class="card-heading"><div><span class="card-number">03</span><h3>Reveal ladder</h3></div><button class="icon-button icon-button--dark" id="clear-reveal" type="button" aria-label="Clear reveal">×</button></div>
+          <div class="reveal-placeholder" id="reveal-placeholder"><span>✦</span><p>A valid signal becomes a progressive reveal here.</p></div>
+          <div class="reveal-result" id="reveal-result" hidden>
+            <div class="reveal-category" id="reveal-category"></div><div class="reveal-title" id="reveal-title"></div>
+            <dl class="reveal-facts"><div><dt>Begin broad</dt><dd id="reveal-cue"></dd></div><div><dt>First letter</dt><dd id="reveal-first"></dd></div><div><dt>Length</dt><dd id="reveal-length"></dd></div><div><dt>Last letter</dt><dd id="reveal-last"></dd></div></dl>
+          </div>
+        </article>
+        <article class="studio-card studio-card--stealth">
+          <div class="card-heading"><div><span class="card-number">04</span><h3>Performance keypad</h3></div><span class="status-dot status-dot--amber">Stealth</span></div>
+          <p>Let them type the resonance. Tap equals, then double-tap the meter whenever you need the peek.</p>
+          <button class="secondary-button" id="open-keypad" type="button">Open focus meter</button>
+        </article>
+      </div>
+      <details class="instructions"><summary>Performance outline</summary><ol><li>Generate a session and have the participant open this page on their phone.</li><li>They enter the session, freely search 256 thoughts, and lock in one.</li><li>They tell you only the five-digit resonance number—or type it into the focus meter.</li><li>Reveal progressively: broad cue, category, letter information, then the exact thought.</li></ol></details>
+    </section>
+
+    <section class="screen screen--meter" data-screen="focus-meter" hidden>
+      <div class="meter-shell">
+        <div class="meter-header"><span>FOCUS / CALIBRATION</span><button id="close-keypad" type="button" aria-label="Close focus meter">×</button></div>
+        <button class="meter-display" id="meter-display" type="button" aria-label="Focus meter display. Double tap to peek."><span id="meter-entry">0</span><small id="meter-status">READY</small></button>
+        <div class="keypad" id="keypad">
+          <button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button>
+          <button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button>
+          <button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button>
+          <button type="button" data-key="clear">C</button><button type="button" data-key="0">0</button><button class="keypad__equals" type="button" data-key="equals">=</button>
+        </div>
+        <p class="meter-footnote">Double-tap the display after calibration.</p>
+      </div>
+      <div class="peek-toast" id="peek-toast" role="status" aria-live="polite" hidden><span id="peek-category"></span><strong id="peek-title"></strong></div>
+    </section>
+  </main>
+  <footer class="app-footer"><span>Original performance tool · entertainment use</span><button id="studio-hint" type="button" tabindex="-1" aria-hidden="true">studio</button></footer>
+</div>
+
+<dialog class="confirm-dialog" id="confirm-dialog"><form method="dialog"><p class="kicker">Final choice</p><h2 id="confirm-title">Lock this thought?</h2><p>Make a clear mental picture. Once locked, the index will hide it.</p><div class="button-row"><button class="secondary-button" value="cancel">Keep browsing</button><button class="primary-button" id="confirm-lock" value="confirm">Lock it in</button></div></form></dialog>
+
+<script define:vars={{ catalog }}>
+  const PRIME = 9973;
+  const screens = Array.from(document.querySelectorAll('[data-screen]'));
+  const shell = document.querySelector('#app-shell');
+  const status = document.querySelector('#topbar-status');
+  const backButton = document.querySelector('#back-button');
+  const wordmark = document.querySelector('#wordmark');
+  const participantForm = document.querySelector('#participant-session-form');
+  const participantSessionInput = document.querySelector('#participant-session');
+  const participantSessionError = document.querySelector('#participant-session-error');
+  const participantSessionLabel = document.querySelector('#participant-session-label');
+  const searchInput = document.querySelector('#thought-search');
+  const clearSearchButton = document.querySelector('#clear-search');
+  const categoryStrip = document.querySelector('#category-strip');
+  const thoughtGrid = document.querySelector('#thought-grid');
+  const resultCount = document.querySelector('#result-count');
+  const emptyState = document.querySelector('#empty-state');
+  const surpriseButton = document.querySelector('#surprise-button');
+  const confirmDialog = document.querySelector('#confirm-dialog');
+  const confirmTitle = document.querySelector('#confirm-title');
+  const confirmLock = document.querySelector('#confirm-lock');
+  const lockedThought = document.querySelector('#locked-thought');
+  const signalNumber = document.querySelector('#signal-number');
+  const hideThoughtButton = document.querySelector('#hide-thought-button');
+  const copySignalButton = document.querySelector('#copy-signal-button');
+  const restartParticipant = document.querySelector('#restart-participant');
+  const studioSessionDisplay = document.querySelector('#studio-session-display');
+  const newSessionButton = document.querySelector('#new-session-button');
+  const copySessionButton = document.querySelector('#copy-session-button');
+  const decoderForm = document.querySelector('#decoder-form');
+  const decoderSession = document.querySelector('#decoder-session');
+  const decoderSignal = document.querySelector('#decoder-signal');
+  const decoderError = document.querySelector('#decoder-error');
+  const revealPlaceholder = document.querySelector('#reveal-placeholder');
+  const revealResult = document.querySelector('#reveal-result');
+  const revealCategory = document.querySelector('#reveal-category');
+  const revealTitle = document.querySelector('#reveal-title');
+  const revealCue = document.querySelector('#reveal-cue');
+  const revealFirst = document.querySelector('#reveal-first');
+  const revealLength = document.querySelector('#reveal-length');
+  const revealLast = document.querySelector('#reveal-last');
+  const clearRevealButton = document.querySelector('#clear-reveal');
+  const exitStudio = document.querySelector('#exit-studio');
+  const openKeypad = document.querySelector('#open-keypad');
+  const closeKeypad = document.querySelector('#close-keypad');
+  const keypad = document.querySelector('#keypad');
+  const meterEntry = document.querySelector('#meter-entry');
+  const meterStatus = document.querySelector('#meter-status');
+  const meterDisplay = document.querySelector('#meter-display');
+  const peekToast = document.querySelector('#peek-toast');
+  const peekCategory = document.querySelector('#peek-category');
+  const peekTitle = document.querySelector('#peek-title');
+
+  const state = { screen: 'participant-start', participantSession: '', performerSession: '', category: 'All', query: '', pendingIndex: -1, selectedIndex: -1, selectedSignal: '', thoughtHidden: false, decoded: null, meterBuffer: '', meterDecoded: null };
+  const onlyDigits = (value, max = 99) => String(value ?? '').replace(/\D/g, '').slice(0, max);
+  const formatSession = (value) => onlyDigits(value, 6);
+  const formatSignal = (value) => { const digits = onlyDigits(value, 5); return digits.length > 2 ? `${digits.slice(0, 2)} ${digits.slice(2)}` : digits; };
+  const copyText = async (text, button) => { try { await navigator.clipboard.writeText(text); const original = button?.textContent; if (button) button.textContent = 'Copied'; window.setTimeout(() => { if (button && original) button.textContent = original; }, 1200); } catch { window.prompt('Copy this number:', text); } };
+  const hashSession = (session) => { let hash = 2166136261; for (const character of session) { hash ^= character.charCodeAt(0); hash = Math.imul(hash, 16777619); } hash ^= hash >>> 16; hash = Math.imul(hash, 2246822507); hash ^= hash >>> 13; return hash >>> 0; };
+  const sessionParameters = (session) => { let seed = hashSession(session); const next = () => { seed += 0x6D2B79F5; let value = seed; value = Math.imul(value ^ (value >>> 15), value | 1); value ^= value + Math.imul(value ^ (value >>> 7), value | 61); return (value ^ (value >>> 14)) >>> 0; }; return { a: (next() % (PRIME - 1)) + 1, b: next() % PRIME }; };
+  const mod = (value, divisor) => ((value % divisor) + divisor) % divisor;
+  const modPow = (base, exponent, divisor) => { let result = 1; let current = mod(base, divisor); let power = exponent; while (power > 0) { if (power & 1) result = (result * current) % divisor; current = (current * current) % divisor; power >>= 1; } return result; };
+  const modInverse = (value) => modPow(value, PRIME - 2, PRIME);
+  const digitSum = (value) => String(value).split('').reduce((sum, digit) => sum + Number(digit), 0);
+  const checkDigit = (body, session, index) => mod(digitSum(String(body).padStart(4, '0')) + digitSum(session) + index * 7, 10);
+  const encodeThought = (index, session) => { const { a, b } = sessionParameters(session); const body = mod(a * (index + 1) + b, PRIME); return `${String(body).padStart(4, '0')}${checkDigit(body, session, index)}`; };
+  const decodeThought = (signal, session) => { const digits = onlyDigits(signal, 5); if (digits.length !== 5 || session.length !== 6) return null; const body = Number(digits.slice(0, 4)); if (body >= PRIME) return null; const { a, b } = sessionParameters(session); const encodedIndex = mod(modInverse(a) * mod(body - b, PRIME), PRIME); const index = encodedIndex - 1; if (index < 0 || index >= catalog.length) return null; if (Number(digits.at(-1)) !== checkDigit(body, session, index)) return null; return { ...catalog[index], index }; };
+  const generateSession = () => { const random = new Uint32Array(1); crypto.getRandomValues(random); return String(100000 + (random[0] % 900000)); };
+  const setScreen = (name) => { state.screen = name; for (const screen of screens) screen.hidden = screen.dataset.screen !== name; const performer = name === 'performer-studio' || name === 'focus-meter'; document.body.dataset.mode = performer ? 'performer' : 'participant'; if (shell) shell.dataset.screen = name; if (status) status.textContent = name === 'participant-index' ? 'Private index' : name === 'participant-signal' ? 'Signal locked' : performer ? 'Performer only' : 'Thought Index'; if (backButton) backButton.hidden = !['participant-index', 'participant-signal'].includes(name); window.scrollTo({ top: 0, behavior: 'auto' }); };
+  const categories = ['All', ...new Set(catalog.map((item) => item.category))];
+  const renderCategories = () => { if (!categoryStrip) return; categoryStrip.innerHTML = ''; for (const category of categories) { const button = document.createElement('button'); button.type = 'button'; button.textContent = category; button.className = 'category-chip'; button.dataset.active = String(category === state.category); button.addEventListener('click', () => { state.category = category; renderCategories(); renderThoughts(); }); categoryStrip.append(button); } };
+  const filteredThoughts = () => { const query = state.query.trim().toLocaleLowerCase(); return catalog.map((item, index) => ({ ...item, index })).filter((item) => state.category === 'All' || item.category === state.category).filter((item) => !query || `${item.title} ${item.category}`.toLocaleLowerCase().includes(query)); };
+  const openConfirmation = (index) => { state.pendingIndex = index; if (confirmTitle) confirmTitle.textContent = `Lock “${catalog[index].title}”?`; if (confirmDialog instanceof HTMLDialogElement) confirmDialog.showModal(); };
+  const renderThoughts = () => { if (!thoughtGrid || !resultCount || !emptyState) return; const items = filteredThoughts(); resultCount.textContent = `${items.length} thought${items.length === 1 ? '' : 's'}`; thoughtGrid.innerHTML = ''; emptyState.hidden = items.length !== 0; for (const item of items) { const button = document.createElement('button'); button.type = 'button'; button.className = 'thought-card'; button.innerHTML = `<span>${item.category}</span><strong>${item.title}</strong><i aria-hidden="true">↗</i>`; button.addEventListener('click', () => openConfirmation(item.index)); thoughtGrid.append(button); } };
+  const startParticipantSession = (session) => { state.participantSession = session; state.category = 'All'; state.query = ''; if (participantSessionLabel) participantSessionLabel.textContent = session; if (searchInput) searchInput.value = ''; renderCategories(); renderThoughts(); setScreen('participant-index'); window.setTimeout(() => searchInput?.focus(), 100); };
+  const lockThought = () => { if (state.pendingIndex < 0) return; state.selectedIndex = state.pendingIndex; state.selectedSignal = encodeThought(state.selectedIndex, state.participantSession); state.thoughtHidden = false; const thought = catalog[state.selectedIndex]; if (lockedThought) lockedThought.textContent = `You chose ${thought.title}.`; if (signalNumber) signalNumber.textContent = formatSignal(state.selectedSignal); if (hideThoughtButton) hideThoughtButton.textContent = 'Hide thought'; setScreen('participant-signal'); if (navigator.vibrate) navigator.vibrate([35, 45, 70]); };
+  const setPerformerSession = (session) => { state.performerSession = session; localStorage.setItem('amazewow.session', session); if (studioSessionDisplay) studioSessionDisplay.textContent = session; if (decoderSession) decoderSession.value = session; };
+  const enterStudio = () => { let session = onlyDigits(localStorage.getItem('amazewow.session'), 6); if (session.length !== 6) session = generateSession(); setPerformerSession(session); setScreen('performer-studio'); const url = new URL(window.location.href); url.searchParams.set('mode', 'performer'); history.replaceState({}, '', url); };
+  const leaveStudio = () => { setScreen('participant-start'); const url = new URL(window.location.href); url.searchParams.delete('mode'); history.replaceState({}, '', url); };
+  const clearReveal = () => { state.decoded = null; if (revealPlaceholder) revealPlaceholder.hidden = false; if (revealResult) revealResult.hidden = true; };
+  const showReveal = (thought) => { state.decoded = thought; const letters = thought.title.replace(/[^A-Za-zÀ-ÿ]/g, ''); if (revealPlaceholder) revealPlaceholder.hidden = true; if (revealResult) revealResult.hidden = false; if (revealCategory) revealCategory.textContent = thought.category; if (revealTitle) revealTitle.textContent = thought.title; if (revealCue) revealCue.textContent = thought.cue; if (revealFirst) revealFirst.textContent = letters.at(0)?.toUpperCase() || '—'; if (revealLength) revealLength.textContent = `${letters.length} letters`; if (revealLast) revealLast.textContent = letters.at(-1)?.toUpperCase() || '—'; if (navigator.vibrate) navigator.vibrate(45); };
+  const processMeter = () => { const thought = decodeThought(state.meterBuffer, state.performerSession); if (!thought) { state.meterDecoded = null; if (meterStatus) meterStatus.textContent = 'RECHECK'; if (meterEntry) meterEntry.textContent = '—'; return; } state.meterDecoded = thought; const confidence = 78 + (hashSession(`${state.meterBuffer}${state.performerSession}`) % 19); if (meterEntry) meterEntry.textContent = `${confidence}%`; if (meterStatus) meterStatus.textContent = 'STABLE'; if (navigator.vibrate) navigator.vibrate([30, 35, 30]); };
+
+  participantSessionInput?.addEventListener('input', () => { participantSessionInput.value = formatSession(participantSessionInput.value); if (participantSessionError) participantSessionError.textContent = ''; });
+  participantForm?.addEventListener('submit', (event) => { event.preventDefault(); const session = formatSession(participantSessionInput?.value); if (session.length !== 6) { if (participantSessionError) participantSessionError.textContent = 'Enter all six digits.'; participantSessionInput?.focus(); return; } startParticipantSession(session); });
+  searchInput?.addEventListener('input', () => { state.query = searchInput.value; if (clearSearchButton) clearSearchButton.hidden = !state.query; renderThoughts(); });
+  clearSearchButton?.addEventListener('click', () => { state.query = ''; if (searchInput) searchInput.value = ''; clearSearchButton.hidden = true; renderThoughts(); searchInput?.focus(); });
+  surpriseButton?.addEventListener('click', () => { const items = filteredThoughts(); if (!items.length) return; const random = new Uint32Array(1); crypto.getRandomValues(random); openConfirmation(items[random[0] % items.length].index); });
+  confirmLock?.addEventListener('click', lockThought);
+  hideThoughtButton?.addEventListener('click', () => { state.thoughtHidden = !state.thoughtHidden; const thought = catalog[state.selectedIndex]; if (lockedThought) lockedThought.textContent = state.thoughtHidden ? 'Your thought is hidden.' : `You chose ${thought.title}.`; hideThoughtButton.textContent = state.thoughtHidden ? 'Show thought' : 'Hide thought'; });
+  copySignalButton?.addEventListener('click', () => copyText(state.selectedSignal, copySignalButton));
+  restartParticipant?.addEventListener('click', () => startParticipantSession(state.participantSession));
+  backButton?.addEventListener('click', () => { if (state.screen === 'participant-signal') startParticipantSession(state.participantSession); else setScreen('participant-start'); });
+  newSessionButton?.addEventListener('click', () => { setPerformerSession(generateSession()); if (decoderSignal) decoderSignal.value = ''; clearReveal(); });
+  copySessionButton?.addEventListener('click', () => copyText(state.performerSession, copySessionButton));
+  decoderSession?.addEventListener('input', () => { decoderSession.value = formatSession(decoderSession.value); if (decoderError) decoderError.textContent = ''; });
+  decoderSignal?.addEventListener('input', () => { decoderSignal.value = formatSignal(decoderSignal.value); if (decoderError) decoderError.textContent = ''; });
+  decoderForm?.addEventListener('submit', (event) => { event.preventDefault(); const session = formatSession(decoderSession?.value); const signal = onlyDigits(decoderSignal?.value, 5); const thought = decodeThought(signal, session); if (!thought) { if (decoderError) decoderError.textContent = 'That session and resonance do not match. Check every digit.'; clearReveal(); return; } if (decoderError) decoderError.textContent = ''; setPerformerSession(session); showReveal(thought); });
+  clearRevealButton?.addEventListener('click', clearReveal);
+  exitStudio?.addEventListener('click', leaveStudio);
+  openKeypad?.addEventListener('click', () => { state.meterBuffer = ''; state.meterDecoded = null; if (meterEntry) meterEntry.textContent = '0'; if (meterStatus) meterStatus.textContent = 'READY'; setScreen('focus-meter'); });
+  closeKeypad?.addEventListener('click', () => setScreen('performer-studio'));
+  keypad?.addEventListener('click', (event) => { const target = event.target.closest('[data-key]'); if (!(target instanceof HTMLButtonElement)) return; const key = target.dataset.key; if (/^\d$/.test(key) && state.meterBuffer.length < 5) { state.meterBuffer += key; if (meterEntry) meterEntry.textContent = formatSignal(state.meterBuffer); if (meterStatus) meterStatus.textContent = 'INPUT'; } else if (key === 'clear') { state.meterBuffer = ''; state.meterDecoded = null; if (meterEntry) meterEntry.textContent = '0'; if (meterStatus) meterStatus.textContent = 'READY'; } else if (key === 'equals') processMeter(); });
+  let lastMeterTap = 0;
+  meterDisplay?.addEventListener('click', () => { const now = Date.now(); if (now - lastMeterTap < 420 && state.meterDecoded) { if (peekCategory) peekCategory.textContent = state.meterDecoded.category; if (peekTitle) peekTitle.textContent = state.meterDecoded.title; if (peekToast) { peekToast.hidden = false; window.setTimeout(() => { peekToast.hidden = true; }, 2400); } } lastMeterTap = now; });
+  let logoPressTimer; let logoTaps = 0; let logoTapTimer;
+  const cancelLogoPress = () => window.clearTimeout(logoPressTimer);
+  wordmark?.addEventListener('pointerdown', () => { logoPressTimer = window.setTimeout(enterStudio, 900); });
+  wordmark?.addEventListener('pointerup', cancelLogoPress); wordmark?.addEventListener('pointerleave', cancelLogoPress);
+  wordmark?.addEventListener('click', () => { logoTaps += 1; window.clearTimeout(logoTapTimer); logoTapTimer = window.setTimeout(() => { logoTaps = 0; }, 1200); if (logoTaps >= 5) { logoTaps = 0; enterStudio(); } });
+  window.addEventListener('keydown', (event) => { if (event.shiftKey && event.key.toLocaleLowerCase() === 'p') enterStudio(); });
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  const params = new URLSearchParams(window.location.search); if (params.get('mode') === 'performer') enterStudio(); else setScreen('participant-start');
+</script>
+
+<div class="sr-only" id="live-region" aria-live="polite"></div>
