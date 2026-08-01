@@ -1,33 +1,29 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A small interactive experiment built as an isolated Astro app.">
-  <meta name="theme-color" content="#0d0b16">
-  <title>AmazeWow</title>
-  <link rel="stylesheet" href="assets/app.css">
-  <script type="module" src="assets/app.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A private, local-first digital mentalism experience for performers and participants.">
+<meta name="theme-color" content="#f3efe5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./assets/app.css">
+<title>AmazeWow — The Thought Index</title>
 </head>
-<body>
-  <main>
-    <section class="machine" aria-labelledby="machine-title">
-      <div class="machine__glow" aria-hidden="true"></div>
-      <p class="eyebrow">Independent experiment 001</p>
-      <h1 id="machine-title">Amaze<span>Wow</span></h1>
-      <p class="intro">A tiny machine for manufacturing a moment of wonder.</p>
-
-      <div class="reveal" id="reveal" aria-live="polite">
-        <span class="reveal__label">Current output</span>
-        <strong id="reveal-text">Press the button. Expect very little.</strong>
-      </div>
-
-      <button class="wow-button" id="wow-button" type="button">
-        <span>Make something happen</span>
-      </button>
-
-      <p class="footnote">No Bungus code was invited to this party.</p>
-    </section>
-  </main>
+<body data-mode="participant">
+<div class="app-shell" id="app-shell">
+<header class="topbar"><button class="wordmark" id="wordmark" type="button" aria-label="AmazeWow home"><span class="wordmark__mark" aria-hidden="true">✦</span><span>AmazeWow</span></button><div class="topbar__status" id="topbar-status">Thought Index</div><button class="icon-button" id="back-button" type="button" aria-label="Go back" hidden>←</button></header>
+<main class="stage">
+<section class="screen screen--center" data-screen="participant-start"><div class="hero-symbol" aria-hidden="true"><span></span><span></span><span></span></div><p class="kicker">A private attention experiment</p><h1>The Thought Index</h1><p class="lede">Choose one vivid thought from a field of possibilities. Nothing is sent, saved, or shared.</p><form class="session-form" id="participant-session-form" novalidate><label for="participant-session">Enter the six-digit session</label><div class="code-entry"><input id="participant-session" name="session" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" aria-describedby="participant-session-error"><button class="primary-button" type="submit">Enter index</button></div><p class="form-error" id="participant-session-error" role="alert"></p></form><div class="privacy-note"><span aria-hidden="true">◌</span><p>Runs entirely inside this browser. No login, camera, microphone, or network pairing.</p></div></section>
+<section class="screen screen--index" data-screen="participant-index" hidden><div class="index-intro"><p class="kicker">Session <strong id="participant-session-label"></strong></p><h2>Find a thought you can picture clearly.</h2><p>Search, browse, or let one catch your eye. The choice is yours.</p></div><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="thought-search" type="search" placeholder="Search the index" autocomplete="off"><button id="clear-search" type="button" aria-label="Clear search" hidden>×</button></div><div class="category-strip" id="category-strip" aria-label="Thought categories"></div><div class="index-meta"><span id="result-count"></span><button class="text-button" id="surprise-button" type="button">Choose for me</button></div><div class="thought-grid" id="thought-grid"></div><div class="empty-state" id="empty-state" hidden><strong>No match.</strong><span>Try a broader word or another category.</span></div></section>
+<section class="screen screen--center" data-screen="participant-signal" hidden><div class="lock-orbit" aria-hidden="true"><span>✦</span></div><p class="kicker">Thought locked</p><h2 id="locked-thought">Your thought is held in mind.</h2><p class="lede lede--small">Say only the resonance number below. Keep the thought itself private.</p><div class="signal-card"><span class="signal-card__label">Resonance</span><strong id="signal-number">00 000</strong><div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div><div class="button-row"><button class="secondary-button" id="hide-thought-button" type="button">Hide thought</button><button class="primary-button" id="copy-signal-button" type="button">Copy number</button></div><button class="text-button" id="restart-participant" type="button">Start a new thought</button></section>
+<section class="screen screen--studio" data-screen="performer-studio" hidden><div class="studio-heading"><div><p class="kicker">Performer console</p><h2>Signal Studio</h2></div><button class="secondary-button secondary-button--small" id="exit-studio" type="button">Exit</button></div><div class="studio-grid"><article class="studio-card studio-card--session"><div class="card-heading"><div><span class="card-number">01</span><h3>Create a session</h3></div><span class="status-dot">Local</span></div><p>Give this six-digit number to the participant. It scrambles every resonance differently.</p><div class="session-display" id="studio-session-display">000000</div><div class="button-row"><button class="primary-button" id="new-session-button" type="button">New session</button><button class="secondary-button" id="copy-session-button" type="button">Copy</button></div></article><article class="studio-card studio-card--decode"><div class="card-heading"><div><span class="card-number">02</span><h3>Read the signal</h3></div></div><form id="decoder-form" class="decoder-form" novalidate><label>Session<input id="decoder-session" type="text" inputmode="numeric" maxlength="6" placeholder="000000"></label><label>Resonance<input id="decoder-signal" type="text" inputmode="numeric" maxlength="6" placeholder="00 000"></label><button class="primary-button" type="submit">Decode thought</button><p class="form-error" id="decoder-error" role="alert"></p></form></article><article class="studio-card studio-card--reveal" id="reveal-card" aria-live="polite"><div class="card-heading"><div><span class="card-number">03</span><h3>Reveal ladder</h3></div><button class="icon-button icon-button--dark" id="clear-reveal" type="button" aria-label="Clear reveal">×</button></div><div class="reveal-placeholder" id="reveal-placeholder"><span>✦</span><p>A valid signal becomes a progressive reveal here.</p></div><div class="reveal-result" id="reveal-result" hidden><div class="reveal-category" id="reveal-category"></div><div class="reveal-title" id="reveal-title"></div><dl class="reveal-facts"><div><dt>Begin broad</dt><dd id="reveal-cue"></dd></div><div><dt>First letter</dt><dd id="reveal-first"></dd></div><div><dt>Length</dt><dd id="reveal-length"></dd></div><div><dt>Last letter</dt><dd id="reveal-last"></dd></div></dl></div></article><article class="studio-card studio-card--stealth"><div class="card-heading"><div><span class="card-number">04</span><h3>Performance keypad</h3></div><span class="status-dot status-dot--amber">Stealth</span></div><p>Let them type the resonance. Tap equals, then double-tap the meter whenever you need the peek.</p><button class="secondary-button" id="open-keypad" type="button">Open focus meter</button></article></div><details class="instructions"><summary>Performance outline</summary><ol><li>Generate a session and have the participant open this page on their phone.</li><li>They enter the session, freely search 256 thoughts, and lock in one.</li><li>They tell you only the five-digit resonance number—or type it into the focus meter.</li><li>Reveal progressively: broad cue, category, letter information, then the exact thought.</li></ol></details></section>
+<section class="screen screen--meter" data-screen="focus-meter" hidden><div class="meter-shell"><div class="meter-header"><span>FOCUS / CALIBRATION</span><button id="close-keypad" type="button" aria-label="Close focus meter">×</button></div><button class="meter-display" id="meter-display" type="button" aria-label="Focus meter display. Double tap to peek."><span id="meter-entry">0</span><small id="meter-status">READY</small></button><div class="keypad" id="keypad"><button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button><button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button><button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button><button type="button" data-key="clear">C</button><button type="button" data-key="0">0</button><button class="keypad__equals" type="button" data-key="equals">=</button></div><p class="meter-footnote">Double-tap the display after calibration.</p></div><div class="peek-toast" id="peek-toast" role="status" aria-live="polite" hidden><span id="peek-category"></span><strong id="peek-title"></strong></div></section>
+</main><footer class="app-footer"><span>Original performance tool · entertainment use</span><button id="studio-hint" type="button" tabindex="-1" aria-hidden="true">studio</button></footer></div>
+<dialog class="confirm-dialog" id="confirm-dialog"><form method="dialog"><p class="kicker">Final choice</p><h2 id="confirm-title">Lock this thought?</h2><p>Make a clear mental picture. Once locked, the index will hide it.</p><div class="button-row"><button class="secondary-button" value="cancel">Keep browsing</button><button class="primary-button" id="confirm-lock" value="confirm">Lock it in</button></div></form></dialog>
+<div class="sr-only" id="live-region" aria-live="polite"></div>
+<script type="module" src="./assets/app.js"></script>
 </body>
 </html>
