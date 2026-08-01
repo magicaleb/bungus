@@ -1,37 +1,107 @@
-const reveals = [
-  'A coincidence with excellent timing.',
-  'A tiny miracle wearing ordinary clothes.',
-  'Proof that curiosity still works.',
-  'The exact moment ordinary became memorable.',
-  'Something impossible enough to be fun.'
-];
-
-const button = document.querySelector('#wow-button');
-const reveal = document.querySelector('#reveal');
-const revealText = document.querySelector('#reveal-text');
-let previousIndex = -1;
-
-function chooseReveal() {
-  if (!(button instanceof HTMLButtonElement)) return;
-  if (!(reveal instanceof HTMLElement)) return;
-  if (!(revealText instanceof HTMLElement)) return;
-
-  let nextIndex = previousIndex;
-  while (nextIndex === previousIndex && reveals.length > 1) {
-    nextIndex = Math.floor(Math.random() * reveals.length);
-  }
-
-  previousIndex = nextIndex;
-  button.disabled = true;
-  reveal.dataset.state = 'thinking';
-  revealText.textContent = 'Calculating wonder…';
-
-  window.setTimeout(() => {
-    revealText.textContent = reveals[nextIndex];
-    reveal.dataset.state = 'revealed';
-    button.disabled = false;
-    button.focus({ preventScroll: true });
-  }, 650);
-}
-
-button?.addEventListener('click', chooseReveal);
+const groups=[['Objects','something made, held, or used',['Anchor','Backpack','Bell','Binoculars','Bottle','Camera','Candle','Compass','Envelope','Flashlight','Glasses','Hammer','Hourglass','Key','Lantern','Magnet','Map','Mirror','Needle','Notebook','Padlock','Paintbrush','Pocket Watch','Scissors','Suitcase','Telescope','Thermometer','Umbrella','Violin','Wallet','Whistle','Zipper']],['Places','a location you could imagine entering',['Airport','Aquarium','Attic','Bakery','Bridge','Cabin','Carnival','Castle','Cave','Cinema','Desert','Forest','Garden','Harbor','Hospital','Hotel','Island','Library','Lighthouse','Market','Museum','Observatory','Palace','Playground','Restaurant','Stadium','Station','Temple','Theater','Tunnel','Waterfall','Workshop']],['Animals','a living creature',['Alligator','Bat','Bear','Butterfly','Camel','Cat','Chameleon','Crow','Dolphin','Eagle','Elephant','Fox','Frog','Giraffe','Hedgehog','Horse','Jellyfish','Kangaroo','Lion','Octopus','Owl','Panda','Parrot','Penguin','Rabbit','Raven','Shark','Snake','Spider','Tiger','Turtle','Wolf']],['Food','something with a taste or aroma',['Apple','Bagel','Brownie','Burger','Cheesecake','Cherry','Chocolate','Cinnamon','Coffee','Cookie','Cupcake','Donut','Garlic','Honey','Ice Cream','Lemon','Mango','Marshmallow','Noodles','Orange','Pancake','Peach','Pepper','Pickle','Pizza','Popcorn','Pretzel','Pumpkin','Strawberry','Sushi','Taco','Watermelon']],['Nature','something from the natural world',['Aurora','Boulder','Canyon','Cloud','Coral','Crater','Crystal','Dewdrop','Earthquake','Ember','Feather','Fossil','Galaxy','Glacier','Lightning','Meteor','Moon','Mountain','Ocean','Planet','Rainbow','River','Shell','Snowflake','Star','Storm','Sunflower','Thunder','Tornado','Volcano','Wave','Wildfire']],['People','a person, role, or character',['Astronaut','Baker','Captain','Chef','Detective','Doctor','Explorer','Farmer','Firefighter','Gardener','Inventor','Judge','Librarian','Magician','Musician','Nurse','Painter','Photographer','Pilot','Pirate','Poet','Professor','Robot','Sailor','Scientist','Singer','Spy','Teacher','Traveler','Vampire','Wizard','Writer']],['Symbols','an image, sign, or idea',['Arrow','Crown','Diamond','Doorway','Eye','Fingerprint','Flame','Footprint','Infinity','Labyrinth','Lightning Bolt','Mask','Maze','Moon Phase','Question Mark','Ribbon','Ring','Rose','Shadow','Shield','Spiral','Staircase','Starburst','Sun','Sword','Target','Triangle','Waveform','Wheel','Window','Wings','Yin Yang']],['Moments','an action, feeling, or memory',['Applause','Birthday','Camping','Dancing','Déjà Vu','Dreaming','Falling','Fireworks','First Kiss','Flying','Graduation','Hiding','Laughing','Lost Luggage','Midnight','Opening a Gift','Rainy Day','Road Trip','Roller Coaster','Running','Secret','Singing','Snow Day','Sunrise','Swimming','Thunderstorm','Treasure Hunt','Waiting','Wedding','Whisper','Winning','Wishing']]];
+const catalog=groups.flatMap(([category,cue,titles])=>titles.map(title=>({title,category,cue})));
+const PRIME=9973;
+const screens=Array.from(document.querySelectorAll('[data-screen]'));
+const shell=document.querySelector('#app-shell');
+const status=document.querySelector('#topbar-status');
+const backButton=document.querySelector('#back-button');
+const wordmark=document.querySelector('#wordmark');
+const participantForm=document.querySelector('#participant-session-form');
+const participantSessionInput=document.querySelector('#participant-session');
+const participantSessionError=document.querySelector('#participant-session-error');
+const participantSessionLabel=document.querySelector('#participant-session-label');
+const searchInput=document.querySelector('#thought-search');
+const clearSearchButton=document.querySelector('#clear-search');
+const categoryStrip=document.querySelector('#category-strip');
+const thoughtGrid=document.querySelector('#thought-grid');
+const resultCount=document.querySelector('#result-count');
+const emptyState=document.querySelector('#empty-state');
+const surpriseButton=document.querySelector('#surprise-button');
+const confirmDialog=document.querySelector('#confirm-dialog');
+const confirmTitle=document.querySelector('#confirm-title');
+const confirmLock=document.querySelector('#confirm-lock');
+const lockedThought=document.querySelector('#locked-thought');
+const signalNumber=document.querySelector('#signal-number');
+const hideThoughtButton=document.querySelector('#hide-thought-button');
+const copySignalButton=document.querySelector('#copy-signal-button');
+const restartParticipant=document.querySelector('#restart-participant');
+const studioSessionDisplay=document.querySelector('#studio-session-display');
+const newSessionButton=document.querySelector('#new-session-button');
+const copySessionButton=document.querySelector('#copy-session-button');
+const decoderForm=document.querySelector('#decoder-form');
+const decoderSession=document.querySelector('#decoder-session');
+const decoderSignal=document.querySelector('#decoder-signal');
+const decoderError=document.querySelector('#decoder-error');
+const revealPlaceholder=document.querySelector('#reveal-placeholder');
+const revealResult=document.querySelector('#reveal-result');
+const revealCategory=document.querySelector('#reveal-category');
+const revealTitle=document.querySelector('#reveal-title');
+const revealCue=document.querySelector('#reveal-cue');
+const revealFirst=document.querySelector('#reveal-first');
+const revealLength=document.querySelector('#reveal-length');
+const revealLast=document.querySelector('#reveal-last');
+const clearRevealButton=document.querySelector('#clear-reveal');
+const exitStudio=document.querySelector('#exit-studio');
+const openKeypad=document.querySelector('#open-keypad');
+const closeKeypad=document.querySelector('#close-keypad');
+const keypad=document.querySelector('#keypad');
+const meterEntry=document.querySelector('#meter-entry');
+const meterStatus=document.querySelector('#meter-status');
+const meterDisplay=document.querySelector('#meter-display');
+const peekToast=document.querySelector('#peek-toast');
+const peekCategory=document.querySelector('#peek-category');
+const peekTitle=document.querySelector('#peek-title');
+const state={screen:'participant-start',participantSession:'',performerSession:'',category:'All',query:'',pendingIndex:-1,selectedIndex:-1,selectedSignal:'',thoughtHidden:false,decoded:null,meterBuffer:'',meterDecoded:null};
+const onlyDigits=(value,max=99)=>String(value??'').replace(/\D/g,'').slice(0,max);
+const formatSession=value=>onlyDigits(value,6);
+const formatSignal=value=>{const digits=onlyDigits(value,5);return digits.length>2?`${digits.slice(0,2)} ${digits.slice(2)}`:digits};
+const copyText=async(text,button)=>{try{await navigator.clipboard.writeText(text);const original=button?.textContent;if(button)button.textContent='Copied';window.setTimeout(()=>{if(button&&original)button.textContent=original},1200)}catch{window.prompt('Copy this number:',text)}};
+const hashSession=session=>{let hash=2166136261;for(const character of session){hash^=character.charCodeAt(0);hash=Math.imul(hash,16777619)}hash^=hash>>>16;hash=Math.imul(hash,2246822507);hash^=hash>>>13;return hash>>>0};
+const sessionParameters=session=>{let seed=hashSession(session);const next=()=>{seed+=0x6D2B79F5;let value=seed;value=Math.imul(value^(value>>>15),value|1);value^=value+Math.imul(value^(value>>>7),value|61);return(value^(value>>>14))>>>0};return{a:(next()%(PRIME-1))+1,b:next()%PRIME}};
+const mod=(value,divisor)=>((value%divisor)+divisor)%divisor;
+const modPow=(base,exponent,divisor)=>{let result=1,current=mod(base,divisor),power=exponent;while(power>0){if(power&1)result=result*current%divisor;current=current*current%divisor;power>>=1}return result};
+const modInverse=value=>modPow(value,PRIME-2,PRIME);
+const digitSum=value=>String(value).split('').reduce((sum,digit)=>sum+Number(digit),0);
+const checkDigit=(body,session,index)=>mod(digitSum(String(body).padStart(4,'0'))+digitSum(session)+index*7,10);
+const encodeThought=(index,session)=>{const{a,b}=sessionParameters(session);const body=mod(a*(index+1)+b,PRIME);return`${String(body).padStart(4,'0')}${checkDigit(body,session,index)}`};
+const decodeThought=(signal,session)=>{const digits=onlyDigits(signal,5);if(digits.length!==5||session.length!==6)return null;const body=Number(digits.slice(0,4));if(body>=PRIME)return null;const{a,b}=sessionParameters(session);const encodedIndex=mod(modInverse(a)*mod(body-b,PRIME),PRIME);const index=encodedIndex-1;if(index<0||index>=catalog.length)return null;if(Number(digits.at(-1))!==checkDigit(body,session,index))return null;return{...catalog[index],index}};
+const generateSession=()=>{const random=new Uint32Array(1);crypto.getRandomValues(random);return String(100000+random[0]%900000)};
+const setScreen=name=>{state.screen=name;for(const screen of screens)screen.hidden=screen.dataset.screen!==name;const performer=name==='performer-studio'||name==='focus-meter';document.body.dataset.mode=performer?'performer':'participant';if(shell)shell.dataset.screen=name;if(status)status.textContent=name==='participant-index'?'Private index':name==='participant-signal'?'Signal locked':performer?'Performer only':'Thought Index';if(backButton)backButton.hidden=!['participant-index','participant-signal'].includes(name);window.scrollTo({top:0,behavior:'auto'})};
+const categories=['All',...new Set(catalog.map(item=>item.category))];
+const renderCategories=()=>{if(!categoryStrip)return;categoryStrip.innerHTML='';for(const category of categories){const button=document.createElement('button');button.type='button';button.textContent=category;button.className='category-chip';button.dataset.active=String(category===state.category);button.addEventListener('click',()=>{state.category=category;renderCategories();renderThoughts()});categoryStrip.append(button)}};
+const filteredThoughts=()=>{const query=state.query.trim().toLocaleLowerCase();return catalog.map((item,index)=>({...item,index})).filter(item=>state.category==='All'||item.category===state.category).filter(item=>!query||`${item.title} ${item.category}`.toLocaleLowerCase().includes(query))};
+const openConfirmation=index=>{state.pendingIndex=index;if(confirmTitle)confirmTitle.textContent=`Lock “${catalog[index].title}”?`;if(confirmDialog instanceof HTMLDialogElement)confirmDialog.showModal()};
+const renderThoughts=()=>{if(!thoughtGrid||!resultCount||!emptyState)return;const items=filteredThoughts();resultCount.textContent=`${items.length} thought${items.length===1?'':'s'}`;thoughtGrid.innerHTML='';emptyState.hidden=items.length!==0;for(const item of items){const button=document.createElement('button');button.type='button';button.className='thought-card';button.innerHTML=`<span>${item.category}</span><strong>${item.title}</strong><i aria-hidden="true">↗</i>`;button.addEventListener('click',()=>openConfirmation(item.index));thoughtGrid.append(button)}};
+const startParticipantSession=session=>{state.participantSession=session;state.category='All';state.query='';if(participantSessionLabel)participantSessionLabel.textContent=session;if(searchInput)searchInput.value='';renderCategories();renderThoughts();setScreen('participant-index');window.setTimeout(()=>searchInput?.focus(),100)};
+const lockThought=()=>{if(state.pendingIndex<0)return;state.selectedIndex=state.pendingIndex;state.selectedSignal=encodeThought(state.selectedIndex,state.participantSession);state.thoughtHidden=false;const thought=catalog[state.selectedIndex];if(lockedThought)lockedThought.textContent=`You chose ${thought.title}.`;if(signalNumber)signalNumber.textContent=formatSignal(state.selectedSignal);if(hideThoughtButton)hideThoughtButton.textContent='Hide thought';setScreen('participant-signal');if(navigator.vibrate)navigator.vibrate([35,45,70])};
+const setPerformerSession=session=>{state.performerSession=session;localStorage.setItem('amazewow.session',session);if(studioSessionDisplay)studioSessionDisplay.textContent=session;if(decoderSession)decoderSession.value=session};
+const enterStudio=()=>{let session=onlyDigits(localStorage.getItem('amazewow.session'),6);if(session.length!==6)session=generateSession();setPerformerSession(session);setScreen('performer-studio');const url=new URL(window.location.href);url.searchParams.set('mode','performer');history.replaceState({},'',url)};
+const leaveStudio=()=>{setScreen('participant-start');const url=new URL(window.location.href);url.searchParams.delete('mode');history.replaceState({},'',url)};
+const clearReveal=()=>{state.decoded=null;if(revealPlaceholder)revealPlaceholder.hidden=false;if(revealResult)revealResult.hidden=true};
+const showReveal=thought=>{state.decoded=thought;const letters=thought.title.replace(/[^A-Za-zÀ-ÿ]/g,'');if(revealPlaceholder)revealPlaceholder.hidden=true;if(revealResult)revealResult.hidden=false;if(revealCategory)revealCategory.textContent=thought.category;if(revealTitle)revealTitle.textContent=thought.title;if(revealCue)revealCue.textContent=thought.cue;if(revealFirst)revealFirst.textContent=letters.at(0)?.toUpperCase()||'—';if(revealLength)revealLength.textContent=`${letters.length} letters`;if(revealLast)revealLast.textContent=letters.at(-1)?.toUpperCase()||'—';if(navigator.vibrate)navigator.vibrate(45)};
+const processMeter=()=>{const thought=decodeThought(state.meterBuffer,state.performerSession);if(!thought){state.meterDecoded=null;if(meterStatus)meterStatus.textContent='RECHECK';if(meterEntry)meterEntry.textContent='—';return}state.meterDecoded=thought;const confidence=78+hashSession(`${state.meterBuffer}${state.performerSession}`)%19;if(meterEntry)meterEntry.textContent=`${confidence}%`;if(meterStatus)meterStatus.textContent='STABLE';if(navigator.vibrate)navigator.vibrate([30,35,30])};
+participantSessionInput?.addEventListener('input',()=>{participantSessionInput.value=formatSession(participantSessionInput.value);if(participantSessionError)participantSessionError.textContent=''});
+participantForm?.addEventListener('submit',event=>{event.preventDefault();const session=formatSession(participantSessionInput?.value);if(session.length!==6){if(participantSessionError)participantSessionError.textContent='Enter all six digits.';participantSessionInput?.focus();return}startParticipantSession(session)});
+searchInput?.addEventListener('input',()=>{state.query=searchInput.value;if(clearSearchButton)clearSearchButton.hidden=!state.query;renderThoughts()});
+clearSearchButton?.addEventListener('click',()=>{state.query='';if(searchInput)searchInput.value='';clearSearchButton.hidden=true;renderThoughts();searchInput?.focus()});
+surpriseButton?.addEventListener('click',()=>{const items=filteredThoughts();if(!items.length)return;const random=new Uint32Array(1);crypto.getRandomValues(random);openConfirmation(items[random[0]%items.length].index)});
+confirmLock?.addEventListener('click',lockThought);
+hideThoughtButton?.addEventListener('click',()=>{state.thoughtHidden=!state.thoughtHidden;const thought=catalog[state.selectedIndex];if(lockedThought)lockedThought.textContent=state.thoughtHidden?'Your thought is hidden.':`You chose ${thought.title}.`;hideThoughtButton.textContent=state.thoughtHidden?'Show thought':'Hide thought'});
+copySignalButton?.addEventListener('click',()=>copyText(state.selectedSignal,copySignalButton));
+restartParticipant?.addEventListener('click',()=>startParticipantSession(state.participantSession));
+backButton?.addEventListener('click',()=>{if(state.screen==='participant-signal')startParticipantSession(state.participantSession);else setScreen('participant-start')});
+newSessionButton?.addEventListener('click',()=>{setPerformerSession(generateSession());if(decoderSignal)decoderSignal.value='';clearReveal()});
+copySessionButton?.addEventListener('click',()=>copyText(state.performerSession,copySessionButton));
+decoderSession?.addEventListener('input',()=>{decoderSession.value=formatSession(decoderSession.value);if(decoderError)decoderError.textContent=''});
+decoderSignal?.addEventListener('input',()=>{decoderSignal.value=formatSignal(decoderSignal.value);if(decoderError)decoderError.textContent=''});
+decoderForm?.addEventListener('submit',event=>{event.preventDefault();const session=formatSession(decoderSession?.value);const signal=onlyDigits(decoderSignal?.value,5);const thought=decodeThought(signal,session);if(!thought){if(decoderError)decoderError.textContent='That session and resonance do not match. Check every digit.';clearReveal();return}if(decoderError)decoderError.textContent='';setPerformerSession(session);showReveal(thought)});
+clearRevealButton?.addEventListener('click',clearReveal);exitStudio?.addEventListener('click',leaveStudio);
+openKeypad?.addEventListener('click',()=>{state.meterBuffer='';state.meterDecoded=null;if(meterEntry)meterEntry.textContent='0';if(meterStatus)meterStatus.textContent='READY';setScreen('focus-meter')});
+closeKeypad?.addEventListener('click',()=>setScreen('performer-studio'));
+keypad?.addEventListener('click',event=>{const target=event.target.closest('[data-key]');if(!(target instanceof HTMLButtonElement))return;const key=target.dataset.key;if(/^\d$/.test(key)&&state.meterBuffer.length<5){state.meterBuffer+=key;if(meterEntry)meterEntry.textContent=formatSignal(state.meterBuffer);if(meterStatus)meterStatus.textContent='INPUT'}else if(key==='clear'){state.meterBuffer='';state.meterDecoded=null;if(meterEntry)meterEntry.textContent='0';if(meterStatus)meterStatus.textContent='READY'}else if(key==='equals')processMeter()});
+let lastMeterTap=0;meterDisplay?.addEventListener('click',()=>{const now=Date.now();if(now-lastMeterTap<420&&state.meterDecoded){if(peekCategory)peekCategory.textContent=state.meterDecoded.category;if(peekTitle)peekTitle.textContent=state.meterDecoded.title;if(peekToast){peekToast.hidden=false;window.setTimeout(()=>{peekToast.hidden=true},2400)}}lastMeterTap=now});
+let logoPressTimer,logoTaps=0,logoTapTimer;const cancelLogoPress=()=>window.clearTimeout(logoPressTimer);
+wordmark?.addEventListener('pointerdown',()=>{logoPressTimer=window.setTimeout(enterStudio,900)});wordmark?.addEventListener('pointerup',cancelLogoPress);wordmark?.addEventListener('pointerleave',cancelLogoPress);wordmark?.addEventListener('click',()=>{logoTaps+=1;window.clearTimeout(logoTapTimer);logoTapTimer=window.setTimeout(()=>{logoTaps=0},1200);if(logoTaps>=5){logoTaps=0;enterStudio()}});
+window.addEventListener('keydown',event=>{if(event.shiftKey&&event.key.toLocaleLowerCase()==='p')enterStudio()});
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+const params=new URLSearchParams(window.location.search);if(params.get('mode')==='performer')enterStudio();else setScreen('participant-start');
