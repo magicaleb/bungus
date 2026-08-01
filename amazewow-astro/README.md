@@ -1,33 +1,47 @@
-# AmazeWow
+# AmazeWow — The Thought Index
 
-AmazeWow is an independent Astro application stored inside the `bungus` repository. It does not import files, styles, scripts, or dependencies from the legacy Hangman page.
+A standalone Astro application for an original digital mentalism effect. It is intentionally isolated from the legacy `bungus` Hangman page and shares no runtime code, styles, or dependencies with it.
 
-## Local development
+## The effect
 
-```sh
-cd amazewow-astro
+1. The performer generates a six-digit session in the hidden Signal Studio.
+2. A participant opens AmazeWow on their own phone and enters that session.
+3. They freely search or browse 256 thoughts and lock in any one.
+4. Their phone displays a five-digit resonance number that changes with every session.
+5. The performer decodes the number to receive the exact thought plus a progressive reveal ladder.
+
+The participant's choice never leaves their device. There is no server, database, account, analytics, camera, microphone, or cross-device transmission. A keyed local permutation turns the selected catalog index into a session-specific number; the performer console reverses it.
+
+## Performer access
+
+- Open the app with `?mode=performer`, or
+- Hold the AmazeWow wordmark for about one second, or
+- Tap the wordmark five times, or
+- Press `Shift + P` on a keyboard.
+
+The performer console includes a clear decoder and a stealth focus-meter keypad. In the focus meter, enter the participant's resonance, press `=`, then double-tap the display to peek the thought for a few seconds.
+
+## Development
+
+```bash
 npm install
 npm run dev
-```
-
-## Build
-
-```sh
+npm run check
 npm run build
 ```
 
-Astro writes the production build to `amazewow-astro/dist`.
+## Publish to the existing GitHub Pages folder
 
-## Publish into the existing GitHub Pages site
-
-```sh
+```bash
 npm run publish:pages
 ```
 
-That command builds the app and replaces the repository's `/AmazeWow` folder with the generated static output. The existing root application is not modified.
+That command replaces only the repository-level `/AmazeWow/` folder with the latest static build.
 
-The configured public path is:
+## Performance notes
 
-```text
-https://magicaleb.github.io/bungus/AmazeWow/
-```
+- Have the participant type the session and make the choice themselves.
+- Look away while they browse and lock the thought.
+- Ask only for the resonance number; do not touch their phone.
+- Reveal progressively using the cue, category, first letter, length, and final title.
+- The app is an entertainment tool. Do not present it as medical, neurological, or scientific measurement.
