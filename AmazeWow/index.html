@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A small interactive experiment built as an isolated Astro app.">
+  <meta name="theme-color" content="#0d0b16">
+  <title>AmazeWow</title>
+  <link rel="stylesheet" href="assets/app.css">
+  <script type="module" src="assets/app.js"></script>
+</head>
+<body>
+  <main>
+    <section class="machine" aria-labelledby="machine-title">
+      <div class="machine__glow" aria-hidden="true"></div>
+      <p class="eyebrow">Independent experiment 001</p>
+      <h1 id="machine-title">Amaze<span>Wow</span></h1>
+      <p class="intro">A tiny machine for manufacturing a moment of wonder.</p>
+
+      <div class="reveal" id="reveal" aria-live="polite">
+        <span class="reveal__label">Current output</span>
+        <strong id="reveal-text">Press the button. Expect very little.</strong>
+      </div>
+
+      <button class="wow-button" id="wow-button" type="button">
+        <span>Make something happen</span>
+      </button>
+
+      <p class="footnote">No Bungus code was invited to this party.</p>
+    </section>
+  </main>
+</body>
+</html>
