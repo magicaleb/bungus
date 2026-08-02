@@ -1,0 +1,11 @@
+{
+  "name": "bungus",
+  "version": "1.0.0",
+  "description": "Hangman PWA",
+  "scripts": {
+    "screenshot": "node screenshot.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.1"
+  }
+}
